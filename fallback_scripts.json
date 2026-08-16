@@ -1,0 +1,35 @@
+{
+  "_comment": "Запасные монологи на случай, если Claude API недоступен. Конвейер не встанет.",
+  "Fashion": {
+    "script": "Good afternoon, everyone. Today, I would like to talk about fashion. For some people, fashion is very important. For others, it is just something practical. I think fashion is more than clothes. It is a way to express your personality. The clothes we wear can change how we feel. When we like our outfit, we often feel more confident. And confidence changes the way we speak to other people. So maybe fashion is not about trends at all. Maybe it is about knowing who you are.",
+    "title": "Fashion: 1-minute English speaking practice",
+    "hook": "Your clothes change how you speak.",
+    "summary": "A short monologue about fashion as self-expression.",
+    "tags": ["fashion english", "speaking practice", "b1 english", "monologue", "confidence"],
+    "topic_label_ru": "МОДА"
+  },
+  "Public speaking fear": {
+    "script": "Good evening, everyone. I want to talk about the fear of speaking in public. Almost everyone feels it. Your hands shake. Your voice goes quiet. You forget the first sentence. But here is the thing. The fear does not disappear when you wait. It gets smaller when you speak. Every time you say your idea out loud, the fear loses a little power. Start with one minute. Then two. Then a room full of people. You are not fixing your fear. You are learning to speak with it.",
+    "title": "Fear of public speaking: speak it out loud",
+    "hook": "Fear shrinks when you speak.",
+    "summary": "A short monologue about overcoming the fear of public speaking.",
+    "tags": ["public speaking", "confidence", "fear", "speaking practice", "b2 english"],
+    "topic_label_ru": "СТРАХ ВЫСТУПЛЕНИЙ"
+  },
+  "Remote work": {
+    "script": "Good afternoon, everyone. Let us talk about remote work. A few years ago, it was unusual. Now it is normal for millions of people. Remote work gives us time. No traffic, no long commute, no rush in the morning. But it also takes something away. We lose the small conversations near the coffee machine. We lose the feeling of a team in one room. I believe the answer is not office or home. The answer is choice. People work best when they decide where their best work happens.",
+    "title": "Remote work: 1-minute English speaking practice",
+    "hook": "Office or home? The answer is choice.",
+    "summary": "A short monologue about the trade-offs of remote work.",
+    "tags": ["remote work", "business english", "speaking practice", "work from home", "b2 english"],
+    "topic_label_ru": "УДАЛЁНКА"
+  },
+  "Coffee culture": {
+    "script": "Good morning, everyone. Today I want to talk about coffee. For many of us, coffee is the first decision of the day. But coffee is not only a drink. It is a reason to meet. We say let us have a coffee, and we mean let us talk. In some countries people drink it fast, standing at the bar. In others they sit for an hour with one small cup. Same drink, completely different culture. I think that is beautiful. A simple cup can tell you how a whole country treats time.",
+    "title": "Coffee culture: 1-minute English speaking practice",
+    "hook": "One cup tells you how a country treats time.",
+    "summary": "A short monologue about coffee as a social ritual.",
+    "tags": ["coffee", "culture", "speaking practice", "a2 b1 english", "daily english"],
+    "topic_label_ru": "КОФЕ"
+  }
+}

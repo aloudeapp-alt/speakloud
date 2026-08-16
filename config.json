@@ -1,0 +1,130 @@
+{
+  "_comment": "Все настройки ролика. Меняй значения здесь — код трогать не нужно.",
+
+  "brand": {
+    "channel_name": "SpeakLoud English",
+    "handle": "@speakloud_english",
+    "accent_color": "#FFD34D",
+    "text_color": "#FFFFFF"
+  },
+
+  "video": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "quality_crf": 20
+  },
+
+  "background": {
+    "folder": "backgrounds",
+    "mode": "random",
+    "file": null,
+    "_mode_help": "random = случайный файл из папки; fixed = всегда background.file; rotate = по кругу, порядок запоминается в state.json",
+    "darken": 0.28,
+    "blur": 0,
+    "_help": "darken 0..1 — насколько затемнить фон под текст. blur 0..20 — размытие в пикселях. Поддерживаются .jpg .png .mp4 .mov"
+  },
+
+  "text": {
+    "font": "Poppins-Bold",
+    "_font_help": "Имя файла из папки fonts/ без расширения, либо системный шрифт. Poppins-Bold — как в референсе.",
+    "font_fallback": "Lato-Bold",
+    "_font_fallback_help": "Подставляется автоматически там, где в основном шрифте нет символов (кириллица в подсказках и названии темы).",
+    "font_size": 66,
+    "line_spacing": 1.75,
+    "_line_spacing_help": "Расстояние между строками в долях от размера шрифта. 1.75 = как в референсе, много воздуха.",
+    "max_words_per_line": 4,
+    "side_margin": 90,
+    "align": "center",
+    "color": "#FFFFFF",
+    "shadow": true,
+    "shadow_offset": 4,
+    "shadow_blur": 8,
+    "shadow_opacity": 0.75,
+    "outline_width": 0,
+    "outline_color": "#000000",
+    "uppercase": false
+  },
+
+  "scroll": {
+    "mode": "seconds_per_line",
+    "_mode_help": "seconds_per_line = задаёшь темп чтения (рекомендуется). pixels_per_second = задаёшь скорость в пикселях.",
+    "seconds_per_line": 1.6,
+    "pixels_per_second": 72,
+    "start_offset_lines": 0.0,
+    "tail_seconds": 1.5,
+    "_help": "seconds_per_line 1.6 ≈ спокойный темп. Меньше = быстрее. tail_seconds — пауза после того, как ушла последняя строка."
+  },
+
+  "countdown": {
+    "enabled": true,
+    "seconds_per_digit": 1.0,
+    "digits": [3, 2, 1],
+    "digit_size": 300,
+    "tip_text": "ГОВОРИ ГРОМКО И ЧЁТКО",
+    "tip_size": 52,
+    "tip_y": 0.30,
+    "topic_label_size": 62,
+    "topic_label_color": "#FFD34D",
+    "extra_darken": 0.15,
+    "_help": "Подпись сверху, цифра по центру, тема снизу — как в референсе. Текст монолога уже ползёт под отсчётом."
+  },
+
+  "audio": {
+    "music_folder": "music",
+    "music_volume": 0.12,
+    "fade_out_seconds": 2.0,
+    "tts": {
+      "enabled": false,
+      "_help": "true = после прокрутки добавляется эталонная озвучка монолога. Требует ключ ElevenLabs или OpenAI TTS в .env"
+    }
+  },
+
+  "progress_bar": {
+    "enabled": true,
+    "height": 10,
+    "margin_bottom": 60,
+    "side_margin": 0,
+    "color": "#FFD34D",
+    "track_color": "#FFFFFF",
+    "track_opacity": 0.22,
+    "fill_opacity": 1.0,
+    "_help": "Полоса внизу кадра, растёт по мере прокрутки текста. height — толщина, margin_bottom — отступ от низа, side_margin — поля слева/справа (0 = во всю ширину). color — цвет заполнения, track — цвет пустой части."
+  },
+
+  "outro": {
+    "enabled": true,
+    "seconds": 2.5,
+    "line1": "Now say it again —",
+    "line2": "without looking.",
+    "handle_footer": true
+  },
+
+  "content": {
+    "level": "B1-B2",
+    "words_target": 110,
+    "topics_file": "topics.json",
+    "avoid_repeat_last": 40,
+    "model": "claude-sonnet-5"
+  },
+
+  "publish": {
+    "_slots_help": "Слоты выпуска. name — то, что передаётся в run.py --slot. cron — время в UTC (Москва = UTC+3), это же значение прописывается в .github/workflows/publish.yml. pool — раздел из topics.json. level переопределяет content.level. Добавляй слоты по мере роста до 6-7 в день.",
+    "slots": [
+      {"name": "morning", "cron": "0 6 * * *",  "local": "09:00 МСК", "pool": "morning", "level": "B1-B2"},
+      {"name": "evening", "cron": "0 16 * * *", "local": "19:00 МСК", "pool": "evening", "level": "B2-C1"}
+    ],
+    "timezone": "Europe/Moscow",
+    "youtube": {
+      "enabled": true,
+      "privacy": "public",
+      "category_id": "27",
+      "made_for_kids": false
+    },
+    "tiktok": {
+      "enabled": true,
+      "privacy": "PUBLIC_TO_EVERYONE",
+      "_note": "Публичная публикация возможна только после аудита приложения TikTok. До аудита ролики уходят в черновики аккаунта."
+    }
+  }
+}

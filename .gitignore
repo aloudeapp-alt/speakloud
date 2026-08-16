@@ -1,0 +1,18 @@
+# секреты — НИКОГДА в репозиторий
+.env
+client_secret.json
+youtube_token.json
+*_token.json
+
+# готовые ролики (тяжёлые, живут на YouTube и в артефактах Actions)
+out/
+!out/.gitkeep
+
+# музыка обычно лицензионная — держи локально или проверь права
+music/*
+!music/.gitkeep
+
+__pycache__/
+*.pyc
+.DS_Store
+log.txt

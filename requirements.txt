@@ -1,0 +1,4 @@
+pillow>=10.0
+fonttools>=4.40
+google-api-python-client>=2.100
+google-auth-oauthlib>=1.1
