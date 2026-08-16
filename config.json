@@ -52,7 +52,7 @@
     "seconds_per_line": 1.0,
     "pixels_per_second": 72,
     "start_offset_lines": 0.0,
-    "tail_seconds": 1.0,
+    "tail_seconds": 0,
     "_help": "seconds_per_line 1.6 ≈ спокойный темп. Меньше = быстрее. tail_seconds — пауза после того, как ушла последняя строка."
   },
 
