@@ -72,7 +72,7 @@
 
   "audio": {
     "music_folder": "music",
-    "music_volume": 0.12,
+    "music_volume": 0.9,
     "intro_folder": "music_intro",
     "intro_file": null,
     "intro_volume": 0.5,
