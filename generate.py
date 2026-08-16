@@ -181,13 +181,19 @@ def generate(cfg, slot, explicit_topic=None):
         data = fallback(topic, cfg)
 
     data.setdefault("topic_en", topic["en"])
-    # подпись под отсчётом берём из topics.json (поле label, иначе ru) — она главнее,
-    # чем то, что вернул Claude, чтобы на экране было ровно то, что ты вписал.
-    label = topic.get("label") or topic.get("ru") or topic["en"]
-    if source == "claude":
-        data["topic_label"] = str(label).upper()
+    # Подпись под отсчётом. Язык выбирается один раз в config → content.topic_label_source:
+    #   "en" — английское название (поле en), одинаково для всех тем;
+    #   "ru"/"label" — то, что вписано в topics.json (поле label, иначе ru).
+    # Значение из ответа Claude игнорируем, чтобы на экране было предсказуемо.
+    label_src = cfg["content"].get("topic_label_source", "en")
+    if source == "fallback":
+        base_en = data.get("topic_en", topic["en"])
+        base_field = data.get("topic_label_ru") or base_en
     else:
-        data["topic_label"] = str(data.get("topic_label_ru") or label).upper()
+        base_en = topic["en"]
+        base_field = topic.get("label") or topic.get("ru") or topic["en"]
+    label = base_en if label_src == "en" else base_field
+    data["topic_label"] = str(label).upper()
     data["topic_label_ru"] = data["topic_label"]  # обратная совместимость
     data["slot"] = slot
     data["level"] = level

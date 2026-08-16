@@ -207,9 +207,18 @@ def build_countdown_frames(digits, topic, cfg, tmp):
     t = cfg["text"]
     tip_text = (c.get("tip_text") or "").upper()
     topic_text = (topic or "").upper()
+    max_w = W - 2 * int(c.get("label_side_margin", 70))
+
+    def fit(text, size):
+        """Подбирает размер шрифта так, чтобы строка влезла по ширине кадра."""
+        f = font_for(text, size, t)
+        while text and f.getbbox(text)[2] > max_w and f.size > 22:
+            f = font_for(text, f.size - 3, t)
+        return f
+
     f_digit = font_for("0123456789", c["digit_size"], t)
-    f_tip = font_for(tip_text, c["tip_size"], t)
-    f_topic = font_for(topic_text, c["topic_label_size"], t)
+    f_tip = fit(tip_text, c["tip_size"])
+    f_topic = fit(topic_text, c["topic_label_size"])
     paths = []
     for d in digits:
         img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
