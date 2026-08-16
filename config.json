@@ -20,7 +20,7 @@
     "mode": "random",
     "file": null,
     "_mode_help": "random = случайный файл из папки; fixed = всегда background.file; rotate = по кругу, порядок запоминается в state.json",
-    "darken": 0.0,
+    "darken": 0.28,
     "blur": 0,
     "_help": "darken 0..1 — насколько затемнить фон под текст. blur 0..20 — размытие в пикселях. Поддерживаются .jpg .png .mp4 .mov"
   },
@@ -49,10 +49,10 @@
   "scroll": {
     "mode": "seconds_per_line",
     "_mode_help": "seconds_per_line = задаёшь темп чтения (рекомендуется). pixels_per_second = задаёшь скорость в пикселях.",
-    "seconds_per_line": 1.0,
+    "seconds_per_line": 1.6,
     "pixels_per_second": 72,
     "start_offset_lines": 0.0,
-    "tail_seconds": 0,
+    "tail_seconds": 1.5,
     "_help": "seconds_per_line 1.6 ≈ спокойный темп. Меньше = быстрее. tail_seconds — пауза после того, как ушла последняя строка."
   },
 
@@ -61,7 +61,7 @@
     "seconds_per_digit": 1.0,
     "digits": [3, 2, 1],
     "digit_size": 300,
-    "tip_text": "SPEAK CLEARLY.SPEAK CONFIDENTLY",
+    "tip_text": "ГОВОРИ ГРОМКО И ЧЁТКО",
     "tip_size": 52,
     "tip_y": 0.30,
     "topic_label_size": 62,
@@ -72,7 +72,7 @@
 
   "audio": {
     "music_folder": "music",
-    "music_volume": 0.9,
+    "music_volume": 0.12,
     "intro_folder": "music_intro",
     "intro_file": null,
     "intro_volume": 0.5,
@@ -86,7 +86,7 @@
 
   "progress_bar": {
     "enabled": true,
-    "margin_top": 90,
+    "margin_top": 70,
     "side_margin": 60,
     "label": "YOUR PROGRESS",
     "label_size": 30,
@@ -99,11 +99,22 @@
     "_help": "Верхний прогресс-бар как на референсе: подпись label слева, таймер MM:SS / MM:SS справа, полоса с круглым бегунком. Прогресс = время чтения (обнуляется во время отсчёта). margin_top — отступ сверху, side_margin — поля по бокам, gap — зазор между подписью и полосой, height — толщина полосы, knob_radius — радиус бегунка (0 = без бегунка)."
   },
 
+  "top_fade": {
+    "enabled": true,
+    "follow_progress_bar": true,
+    "gap_below_bar": 10,
+    "solid_until": null,
+    "feather": 90,
+    "strength": 0.95,
+    "color": "#000000",
+    "_help": "Текст плавно растворяется сверху, не наезжая на прогресс-бар. follow_progress_bar=true — высота затухания сама привязана к нижней границе бара (двигаешь margin_top бара — двигается и затухание). Чтобы настроить отдельно: follow_progress_bar=false и задай solid_until (px непрозрачной зоны сверху). feather — высота мягкого перехода в пикселях, strength — макс. плотность (1 = текст исчезает полностью), color — цвет затемнения (по умолчанию чёрный, подходит для тёмного фона)."
+  },
+
   "outro": {
     "enabled": true,
     "seconds": 2.5,
-    "line1": "Great Job!",
-    "line2": "Keep speaking!",
+    "line1": "Now say it again —",
+    "line2": "without looking.",
     "handle_footer": true
   },
 
@@ -116,11 +127,15 @@
   },
 
   "publish": {
-    "_slots_help": "Слоты выпуска. name — то, что передаётся в run.py --slot. cron — время в UTC (Москва = UTC+3), это же значение прописывается в .github/workflows/publish.yml. pool — раздел из topics.json. level переопределяет content.level. Добавляй слоты по мере роста до 6-7 в день.",
+    "_slots_help": "Слоты выпуска. name — то, что передаётся в run.py --slot. cron — БАЗОВОЕ время в UTC (Москва = UTC+3), это же значение прописывается в .github/workflows/publish.yml. pool — раздел из topics.json. level переопределяет content.level.",
     "slots": [
-      {"name": "morning", "cron": "0 6 * * *",  "local": "09:00 МСК", "pool": "morning", "level": "B1-B2"},
-      {"name": "evening", "cron": "0 16 * * *", "local": "19:00 МСК", "pool": "evening", "level": "B2-C1"}
+      {"name": "morning",   "cron": "0 4 * * *",  "local": "~07:00 МСК", "pool": "morning", "level": "B1-B2"},
+      {"name": "noon",      "cron": "0 9 * * *",  "local": "~12:00 МСК", "pool": "morning", "level": "A2-B1"},
+      {"name": "afternoon", "cron": "0 14 * * *", "local": "~17:00 МСК", "pool": "evening", "level": "B2-C1"},
+      {"name": "evening",   "cron": "0 18 * * *", "local": "~21:00 МСК", "pool": "evening", "level": "B2-C1"}
     ],
+    "jitter_minutes": 20,
+    "_jitter_help": "Случайный сдвиг старта: ролик выходит не ровно по cron, а в пределах +0..jitter_minutes минут после него. Так время публикации плавает. 0 = строго по расписанию. Помни: задержка расходует минуты GitHub Actions — на приватном репозитории держи <=20, на публичном минуты бесплатны и лимита нет.",
     "timezone": "Europe/Moscow",
     "youtube": {
       "enabled": true,

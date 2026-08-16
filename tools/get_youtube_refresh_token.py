@@ -34,6 +34,26 @@ if not creds.refresh_token:
 data = json.loads(CS.read_text())
 client = data.get("installed") or data.get("web")
 
+# показать, к какому каналу привязался токен
+try:
+    from googleapiclient.discovery import build
+    yt = build("youtube", "v3", credentials=creds)
+    ch = yt.channels().list(part="snippet,statistics", mine=True).execute()
+    items = ch.get("items", [])
+    if items:
+        s = items[0]["snippet"]
+        st = items[0].get("statistics", {})
+        print("\n" + "-" * 64)
+        print(f"Токен управляет каналом: {s['title']}")
+        print(f"  ID: {items[0]['id']}   подписчиков: {st.get('subscriberCount', '?')}")
+        print("  Это НЕ тот канал? Отзови доступ на myaccount.google.com/permissions")
+        print("  и запусти скрипт снова — Google даст выбрать канал.")
+    else:
+        print("\n[!] У этого аккаунта пока НЕТ YouTube-канала.")
+        print("    Создай канал на youtube.com, иначе загрузка выдаст ошибку.")
+except Exception as e:
+    print(f"\n[i] Не удалось проверить канал ({e}). Это не мешает токену работать.")
+
 print("\n" + "=" * 64)
 print("Секреты для GitHub → Settings → Secrets and variables → Actions")
 print("=" * 64)

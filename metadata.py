@@ -27,8 +27,7 @@ HOW TO PRACTISE
 3. Watch again and record yourself.
 4. Third time: say it in your own words, without reading.
 
-New monologues every day at {slots} ({tz}).
-Subscribe and practise with us — {handle}
+New monologues every day. Subscribe and practise with us — {handle}
 
 {hashtags}"""
 
@@ -40,10 +39,6 @@ TT_CAPTION = """{hook} 🎤 Read it out loud with the countdown.
 def slugify(s, n=60):
     s = re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")
     return s[:n]
-
-
-def slot_times(cfg):
-    return " & ".join(s.get("local") or s.get("cron", "") for s in cfg["publish"]["slots"])
 
 
 def build(data, cfg):
@@ -63,8 +58,6 @@ def build(data, cfg):
     desc = YT_DESC.format(
         hook=data.get("hook", "Practise speaking English out loud."),
         topic=topic, level=level,
-        slots=slot_times(cfg),
-        tz=cfg["publish"]["timezone"],
         handle=cfg["brand"]["handle"],
         hashtags=hashtags_yt,
     )

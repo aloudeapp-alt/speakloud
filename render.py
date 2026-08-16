@@ -336,6 +336,43 @@ def pick_intro_music(cfg):
     return random.choice(tracks) if tracks else None
 
 
+def progress_bar_bottom(cfg):
+    """Нижняя граница прогресс-бара в пикселях — к ней по умолчанию привязано затухание."""
+    pb = cfg.get("progress_bar", {})
+    return (int(pb.get("margin_top", 70)) + int(pb.get("label_size", 30))
+            + int(pb.get("gap", 24)) + int(pb.get("height", 8))
+            + int(pb.get("knob_radius", 14)))
+
+
+def make_top_fade(cfg, tmp, W):
+    """Градиент сверху: текст плавно растворяется, не доезжая до прогресс-бара.
+    По умолчанию высота привязана к позиции бара, но настраивается отдельно."""
+    tf = cfg.get("top_fade", {})
+    if not tf.get("enabled"):
+        return None
+    solid = tf.get("solid_until")
+    if solid is None or tf.get("follow_progress_bar", True):
+        solid = progress_bar_bottom(cfg) + int(tf.get("gap_below_bar", 10))
+    solid = int(solid)
+    feather = int(tf.get("feather", 90))
+    strength = float(tf.get("strength", 0.95))
+    color = hex_rgb(tf.get("color") or "#000000")
+    Hf = max(1, solid + feather)
+
+    # альфа-канал строим в один столбец, затем растягиваем на всю ширину — быстро
+    alpha_col = Image.new("L", (1, Hf), 0)
+    ac = alpha_col.load()
+    for y in range(Hf):
+        a = strength if y <= solid else strength * max(0.0, 1.0 - (y - solid) / feather)
+        ac[0, y] = int(255 * a)
+    alpha = alpha_col.resize((W, Hf))
+    img = Image.new("RGBA", (W, Hf), color + (0,))
+    img.putalpha(alpha)
+    p = tmp / "top_fade.png"
+    img.save(p)
+    return p, Hf
+
+
 def make_knob(radius, color_hex, tmp):
     """Круглый бегунок прогресс-бара."""
     r = int(radius)
@@ -485,7 +522,16 @@ def render(script_text, topic, out_path, cfg, background=None):
             last = "vout"
             idx += 1
 
-        # ---- прогресс-бар сверху (рисуется поверх всего) ----
+        # ---- затухание текста сверху (под прогресс-баром) ----
+        tf = make_top_fade(cfg, tmp, W)
+        if tf:
+            fade_path, _ = tf
+            inputs += ["-i", str(fade_path)]
+            filters.append(f"[{last}][{idx}:v]overlay=0:0[v_fade]")
+            last = "v_fade"
+            idx += 1
+
+        # ---- прогресс-бар сверху (рисуется поверх затухания) ----
         pb = cfg.get("progress_bar", {})
         if pb.get("enabled"):
             last, idx = add_progress_bar(filters, inputs, idx, last, cfg, tmp,

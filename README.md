@@ -60,6 +60,10 @@ python3 run.py --slot evening --upload
 | `progress_bar.margin_top` | `70` | отступ бара от верха кадра |
 | `progress_bar.knob_radius` | `14` | радиус круглого бегунка (0 = без него) |
 | `progress_bar.color` | `#FFD34D` | цвет заполнения и бегунка |
+| `top_fade.enabled` | `true` | плавное затухание текста сверху под баром |
+| `top_fade.follow_progress_bar` | `true` | высота затухания сама следует за `margin_top` бара |
+| `top_fade.feather` | `90` | высота мягкого перехода в пикселях |
+| `top_fade.strength` | `0.95` | плотность (1 = текст исчезает полностью) |
 | `audio.music_volume` | `0.12` | громкость фоновой музыки из `music/` |
 | `audio.intro_folder` | `music_intro` | папка с треком на время отсчёта 3-2-1 |
 | `audio.intro_volume` | `0.5` | громкость интро-музыки (обычно громче фона) |
