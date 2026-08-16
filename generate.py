@@ -13,6 +13,7 @@ import json
 import os
 import random
 import re
+import urllib.error
 import urllib.request
 from datetime import datetime
 from pathlib import Path
@@ -40,7 +41,8 @@ Rules:
 Also write the publishing metadata. The title must work as a hook in a feed, mention the topic, and
 stay under 70 characters. Tags: 15 lowercase keywords, no '#'.
 
-Return ONLY valid JSON, no markdown fence:
+Return ONLY one line of minified valid JSON, no markdown fence, no text before or after.
+Inside string values use no real line breaks — keep each value as one continuous string.
 {{"script": "...", "title": "...", "hook": "one short line, max 8 words", "summary": "one sentence about the topic in English", "tags": ["..."], "topic_label_ru": "тема одним-двумя словами по-русски, ЗАГЛАВНЫМИ"}}"""
 
 
@@ -87,8 +89,8 @@ def pick_topic(cfg, slot, explicit=None):
     return pool[i]
 
 
-def call_claude(prompt, model, max_tokens=1500):
-    key = os.environ.get("ANTHROPIC_API_KEY")
+def call_claude(prompt, model, max_tokens=2000):
+    key = (os.environ.get("ANTHROPIC_API_KEY") or "").strip().strip('"').strip("'")
     if not key:
         raise RuntimeError("нет ANTHROPIC_API_KEY")
     body = json.dumps({
@@ -98,19 +100,40 @@ def call_claude(prompt, model, max_tokens=1500):
     }).encode()
     req = urllib.request.Request(API_URL, data=body, headers={
         "content-type": "application/json",
+        "accept": "application/json",
+        "accept-encoding": "identity",
         "x-api-key": key,
         "anthropic-version": "2023-06-01",
     })
-    with urllib.request.urlopen(req, timeout=120) as r:
-        data = json.loads(r.read())
-    return "".join(b.get("text", "") for b in data.get("content", []))
+    try:
+        with urllib.request.urlopen(req, timeout=120) as r:
+            raw = r.read().decode("utf-8", "replace")
+    except urllib.error.HTTPError as e:
+        detail = e.read().decode("utf-8", "replace")[:500]
+        raise RuntimeError(f"HTTP {e.code} от Anthropic: {detail}")
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        raise RuntimeError(f"ответ API не JSON: {raw[:200]!r}")
+    if data.get("type") == "error":
+        raise RuntimeError(f"API вернул ошибку: {data.get('error')}")
+    text = "".join(b.get("text", "") for b in data.get("content", []) if b.get("type") == "text")
+    if not text.strip():
+        raise RuntimeError(f"пустой ответ модели: {str(data)[:200]}")
+    return text
 
 
 def parse_json_loose(text):
     text = text.strip()
     text = re.sub(r"^```(?:json)?|```$", "", text, flags=re.M).strip()
     m = re.search(r"\{.*\}", text, re.S)
-    return json.loads(m.group(0) if m else text)
+    candidate = m.group(0) if m else text
+    try:
+        return json.loads(candidate)
+    except json.JSONDecodeError:
+        # частая беда: живые переводы строк внутри строковых значений — экранируем и пробуем снова
+        fixed = re.sub(r'(?<!\\)\n', r'\\n', candidate)
+        return json.loads(fixed)
 
 
 def fallback(topic, cfg):
@@ -123,7 +146,8 @@ def fallback(topic, cfg):
     item = dict(bank[key])
     # тема берётся из самой заготовки, иначе подпись и заголовок разъедутся с текстом
     item["topic_en"] = key
-    item.setdefault("topic_label_ru", topic["ru"].upper())
+    fallback_label = topic.get("label") or topic.get("ru") or topic["en"]
+    item.setdefault("topic_label_ru", str(fallback_label).upper())
     return item
 
 
@@ -139,16 +163,32 @@ def generate(cfg, slot, explicit_topic=None):
         words=cfg["content"]["words_target"],
         recent="; ".join(recent) or "none yet",
     )
+    source = "fallback"
+    data = None
     try:
-        data = parse_json_loose(call_claude(prompt, cfg["content"]["model"]))
-        source = "claude"
+        raw = call_claude(prompt, cfg["content"]["model"])
     except Exception as e:
         print(f"[generate] Claude недоступен ({e}); беру заготовку")
+    else:
+        try:
+            data = parse_json_loose(raw)
+            source = "claude"
+        except Exception as e:
+            # видно сырой ответ модели — по нему понятно, что пошло не так
+            print(f"[generate] не разобрал ответ модели ({e}); беру заготовку")
+            print(f"[generate] сырой ответ (первые 300 симв.): {raw[:300]!r}")
+    if data is None:
         data = fallback(topic, cfg)
-        source = "fallback"
 
     data.setdefault("topic_en", topic["en"])
-    data.setdefault("topic_label_ru", topic["ru"].upper())
+    # подпись под отсчётом берём из topics.json (поле label, иначе ru) — она главнее,
+    # чем то, что вернул Claude, чтобы на экране было ровно то, что ты вписал.
+    label = topic.get("label") or topic.get("ru") or topic["en"]
+    if source == "claude":
+        data["topic_label"] = str(label).upper()
+    else:
+        data["topic_label"] = str(data.get("topic_label_ru") or label).upper()
+    data["topic_label_ru"] = data["topic_label"]  # обратная совместимость
     data["slot"] = slot
     data["level"] = level
     data["generated_at"] = datetime.now().isoformat(timespec="seconds")
