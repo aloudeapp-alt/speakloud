@@ -61,7 +61,7 @@
     "seconds_per_digit": 1.0,
     "digits": [3, 2, 1],
     "digit_size": 300,
-    "tip_text": "ГОВОРИ ГРОМКО И ЧЁТКО",
+    "tip_text": "SPEAK CLEARLY.SPEAK CONFIDENTLY",
     "tip_size": 52,
     "tip_y": 0.30,
     "topic_label_size": 62,
@@ -86,7 +86,7 @@
 
   "progress_bar": {
     "enabled": true,
-    "margin_top": 70,
+    "margin_top": 90,
     "side_margin": 60,
     "label": "YOUR PROGRESS",
     "label_size": 30,
