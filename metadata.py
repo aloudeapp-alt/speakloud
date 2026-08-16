@@ -79,40 +79,87 @@ def build(data, cfg):
     }
 
 
+def _fit_wrap(text, max_w, max_size, min_size, t, render, max_lines=2):
+    """Подбирает размер и переносит текст максимум на max_lines строк по ширине max_w."""
+    words = text.split()
+    best = None
+    for size in range(max_size, min_size - 1, -4):
+        f = render.font_for(text, size, t)
+        lines, cur = [], ""
+        for w in words:
+            trial = (cur + " " + w).strip()
+            if not cur or f.getbbox(trial)[2] <= max_w:
+                cur = trial
+            else:
+                lines.append(cur)
+                cur = w
+        if cur:
+            lines.append(cur)
+        if len(lines) <= max_lines and all(f.getbbox(l)[2] <= max_w for l in lines):
+            return f, lines
+        best = (f, lines)
+    return best  # не влезло идеально — вернём самый мелкий вариант
+
+
 def make_thumbnail(data, cfg, bg_path, out_path):
-    """Обложка 1280x720 для YouTube в фирменном стиле канала."""
+    """Вертикальная обложка 1080x1920 под Shorts, в фирменном стиле канала."""
     import render  # переиспользуем поиск шрифтов и тени
-    W, H = 1280, 720
+    W, H = 1080, 1920
+    accent = cfg["brand"]["accent_color"]
+
+    # фон: тот же кадр, вписан по вертикали (без кривой обрезки в ленту)
     if bg_path and Path(bg_path).suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"}:
         img = Image.open(bg_path).convert("RGB")
         r = max(W / img.width, H / img.height)
         img = img.resize((int(img.width * r), int(img.height * r)), Image.LANCZOS)
-        img = img.crop(((img.width - W) // 2, (img.height - H) // 2,
-                        (img.width - W) // 2 + W, (img.height - H) // 2 + H))
-        img = img.filter(ImageFilter.GaussianBlur(3))
+        x0, y0 = (img.width - W) // 2, (img.height - H) // 2
+        img = img.crop((x0, y0, x0 + W, y0 + H)).filter(ImageFilter.GaussianBlur(4))
     else:
-        img = Image.new("RGB", (W, H), (20, 22, 32))
-    img = Image.blend(img, Image.new("RGB", (W, H), (0, 0, 0)), 0.45)
+        img = Image.new("RGB", (W, H), (16, 18, 26))
     canvas = img.convert("RGBA")
 
+    # равномерный скрим + усиление сверху и снизу для читаемости текста
+    canvas.alpha_composite(Image.new("RGBA", (W, H), (0, 0, 0, 120)))
+    col = Image.new("L", (1, H), 0)
+    px = col.load()
+    for y in range(H):
+        top_a = max(0, 150 * (1 - y / (H * 0.42)))
+        bot_a = max(0, 170 * (1 - (H - y) / (H * 0.40)))
+        px[0, y] = int(min(220, top_a + bot_a))
+    grad = Image.new("RGBA", (W, H), (0, 0, 0, 255))
+    grad.putalpha(col.resize((W, H)))
+    canvas.alpha_composite(grad)
+
     t = dict(cfg["text"])
+    accent_style = dict(t); accent_style["color"] = accent
+
+    def center(text, font, y, style=t):
+        bb = font.getbbox(text)
+        render.draw_text_with_effects(canvas, ((W - (bb[2] - bb[0])) // 2 - bb[0], y),
+                                      text, font, style)
+
+    # верхняя плашка-тэглайн
+    tag = "SPEAK IT OUT LOUD"
+    center(tag, render.font_for(tag, 56, t), 430, accent_style)
+
+    # крупная тема, перенос до 2 строк
     topic = data["topic_en"].upper()
-    f_big = render.font_for(topic, 92, t)
-    while f_big.getbbox(topic)[2] > W - 140 and f_big.size > 44:
-        f_big = render.font_for(topic, f_big.size - 4, t)
-    bb = f_big.getbbox(topic)
-    render.draw_text_with_effects(canvas, ((W - (bb[2] - bb[0])) // 2 - bb[0], 250), topic, f_big, t)
+    f_title, lines = _fit_wrap(topic, W - 150, 150, 60, t, render, max_lines=2)
+    line_h = int(f_title.size * 1.12)
+    block_h = line_h * len(lines)
+    y = H // 2 - block_h // 2 - 40
+    for i, ln in enumerate(lines):
+        center(ln, f_title, y + i * line_h)
 
-    top = "SPEAK IT OUT LOUD"
-    f_top = render.font_for(top, 44, t)
-    st = dict(t); st["color"] = cfg["brand"]["accent_color"]
-    bbt = f_top.getbbox(top)
-    render.draw_text_with_effects(canvas, ((W - (bbt[2] - bbt[0])) // 2 - bbt[0], 160), top, f_top, st)
+    # акцентная черта под темой
+    d = ImageDraw.Draw(canvas)
+    ly = y + block_h + 34
+    d.rounded_rectangle([(W - 140) // 2, ly, (W + 140) // 2, ly + 10], radius=5,
+                        fill=render.hex_rgb(accent) + (255,))
 
-    foot = f"{data.get('level') or cfg['content']['level']}  •  {cfg['brand']['handle']}"
-    f_f = render.font_for(foot, 38, t)
-    bbf = f_f.getbbox(foot)
-    render.draw_text_with_effects(canvas, ((W - (bbf[2] - bbf[0])) // 2 - bbf[0], 430), foot, f_f, t)
+    # футер: уровень • хендл
+    foot = f"{data.get('level') or cfg['content']['level']}   •   {cfg['brand']['handle']}"
+    center(foot, render.font_for(foot, 46, t), H - 250)
 
     Path(out_path).parent.mkdir(parents=True, exist_ok=True)
     canvas.convert("RGB").save(out_path, quality=92)
