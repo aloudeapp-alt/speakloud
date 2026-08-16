@@ -55,11 +55,14 @@ python3 run.py --slot evening --upload
 | `countdown.tip_text` | ГОВОРИ ГРОМКО И ЧЁТКО | подсказка над цифрой |
 | `countdown.digits` | `[3,2,1]` | сам отсчёт |
 | `outro.line1/line2` | Now say it again… | финальный кадр с призывом |
-| `progress_bar.enabled` | `true` | полоса внизу, растёт по мере прокрутки |
-| `progress_bar.height` | `10` | толщина полосы в пикселях |
-| `progress_bar.margin_bottom` | `60` | отступ полосы от низа кадра |
-| `progress_bar.color` | `#FFD34D` | цвет заполнения (пустая часть — `track_color`) |
-| `audio.music_volume` | `0.12` | громкость подложки из `music/` |
+| `progress_bar.enabled` | `true` | верхний бар: подпись + таймер + полоса с бегунком |
+| `progress_bar.label` | `YOUR PROGRESS` | подпись слева над полосой |
+| `progress_bar.margin_top` | `70` | отступ бара от верха кадра |
+| `progress_bar.knob_radius` | `14` | радиус круглого бегунка (0 = без него) |
+| `progress_bar.color` | `#FFD34D` | цвет заполнения и бегунка |
+| `audio.music_volume` | `0.12` | громкость фоновой музыки из `music/` |
+| `audio.intro_folder` | `music_intro` | папка с треком на время отсчёта 3-2-1 |
+| `audio.intro_volume` | `0.5` | громкость интро-музыки (обычно громче фона) |
 
 Свой шрифт: положи `.ttf` в `fonts/` и укажи имя файла без расширения в `text.font`.
 
@@ -140,7 +143,8 @@ tools/preview.py     быстрая примерка настроек
 tools/make_brand.py  аватарка, баннер, обложка профиля
 backgrounds/         твои фоны
 fonts/               твои шрифты
-music/               подложка (опционально)
+music/               фоновая музыка (опционально)
+music_intro/         музыка на отсчёт 3-2-1 (опционально)
 out/                 готовые ролики: video.mp4, thumbnail.jpg, script.txt, metadata.json
 ```
 

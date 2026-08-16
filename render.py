@@ -311,12 +311,100 @@ def make_fallback_background(cfg, tmp):
     return p
 
 
+AUDIO_EXT = {".mp3", ".m4a", ".wav", ".aac", ".ogg"}
+
+
 def pick_music(cfg):
     folder = ROOT / cfg["audio"]["music_folder"]
     if not folder.is_dir():
         return None
-    tracks = [p for p in folder.iterdir() if p.suffix.lower() in {".mp3", ".m4a", ".wav", ".aac", ".ogg"}]
+    tracks = [p for p in folder.iterdir() if p.suffix.lower() in AUDIO_EXT]
     return random.choice(tracks) if tracks else None
+
+
+def pick_intro_music(cfg):
+    """Трек, который играет во время отсчёта 3-2-1.
+    Берётся из папки audio.intro_folder (по умолчанию music_intro)."""
+    a = cfg["audio"]
+    if a.get("intro_file"):
+        p = ROOT / a["intro_file"]
+        return p if p.is_file() else None
+    folder = ROOT / a.get("intro_folder", "music_intro")
+    if not folder.is_dir():
+        return None
+    tracks = [p for p in folder.iterdir() if p.suffix.lower() in AUDIO_EXT]
+    return random.choice(tracks) if tracks else None
+
+
+def make_knob(radius, color_hex, tmp):
+    """Круглый бегунок прогресс-бара."""
+    r = int(radius)
+    pad = 4
+    d = 2 * r + 2 * pad
+    img = Image.new("RGBA", (d, d), (0, 0, 0, 0))
+    dr = ImageDraw.Draw(img)
+    dr.ellipse([pad, pad, pad + 2 * r, pad + 2 * r], fill=hex_rgb(color_hex) + (255,))
+    p = tmp / "knob.png"
+    img.save(p)
+    return p, pad
+
+
+def add_progress_bar(filters, inputs, idx, last, cfg, tmp, cd_dur, scroll_dur, W, H):
+    """Верхний прогресс-бар: подпись слева, таймер MM:SS/MM:SS справа,
+    полоса с круглым бегунком. Прогресс идёт по времени чтения (после отсчёта)."""
+    pb = cfg["progress_bar"]
+    mx = int(pb.get("side_margin", 60))
+    mt = int(pb.get("margin_top", 70))
+    ls = int(pb.get("label_size", 30))
+    th = int(pb.get("height", 8))
+    gap = int(pb.get("gap", 24))
+    r = int(pb.get("knob_radius", 14))
+    accent = pb.get("color", "#FFD34D")
+    track = pb.get("track_color", "#FFFFFF")
+    track_a = float(pb.get("track_opacity", 0.25))
+    fontfile = find_font(cfg["text"]["font"])
+
+    x0, x1 = mx, W - mx
+    bar_w = x1 - x0
+    bar_y = mt + ls + gap
+    knob_cy = bar_y + th / 2
+
+    TOT = max(0.1, scroll_dur)
+    CD = cd_dur
+    # секунд прочитано: 0 во время отсчёта, дальше растёт до TOT
+    E = f"min(max(t-{CD:.3f},0),{TOT:.3f})"
+    prog = f"({E})/{TOT:.3f}"
+
+    fill_col = "0x" + accent.lstrip("#")
+    track_col = "0x" + track.lstrip("#")
+
+    # подпись + таймер
+    label = pb.get("label", "YOUR PROGRESS")
+    tot_str = f"{int(TOT) // 60:02d}\\:{int(TOT) % 60:02d}"
+    mm = f"floor(({E})/60)"
+    ss = f"mod(floor({E}),60)"
+    timer_txt = f"%{{eif\\:{mm}\\:d\\:2}}\\:%{{eif\\:{ss}\\:d\\:2}} / {tot_str}"
+
+    chain = (
+        f"[{last}]"
+        f"drawtext=fontfile='{fontfile}':text='{label}':fontcolor={accent}:"
+        f"fontsize={ls}:x={x0}:y={mt},"
+        f"drawtext=fontfile='{fontfile}':text='{timer_txt}':fontcolor=white:"
+        f"fontsize={ls}:x={x1}-tw:y={mt},"
+        f"drawbox=x={x0}:y={bar_y}:w={bar_w}:h={th}:color={track_col}@{track_a}:t=fill,"
+        f"drawbox=x={x0}:y={bar_y}:w='{bar_w}*{prog}':h={th}:color={fill_col}:t=fill"
+        f"[v_pbbox]"
+    )
+    filters.append(chain)
+
+    knob_path, pad = make_knob(r, accent, tmp)
+    inputs += ["-i", str(knob_path)]
+    knob_idx = idx
+    idx += 1
+    kx = f"{x0}-{pad}-{r}+{bar_w}*{prog}"
+    ky = int(knob_cy - r - pad)
+    filters.append(f"[v_pbbox][{knob_idx}:v]overlay=x='{kx}':y={ky}[v_pb]")
+    return "v_pb", idx
 
 
 # ---------------------------------------------------------------- рендер
@@ -341,6 +429,10 @@ def render(script_text, topic, out_path, cfg, background=None):
         scroll_dur = (H + strip_h) / speed + float(s.get("tail_seconds", 1.0))
         outro_dur = cfg["outro"]["seconds"] if cfg["outro"].get("enabled") else 0
         total = scroll_dur + outro_dur
+
+        # длительность отсчёта — нужна и прогресс-бару, и музыке
+        cd = cfg["countdown"]
+        cd_dur = (len(cd["digits"]) * float(cd["seconds_per_digit"])) if cd.get("enabled") else 0.0
 
         bg = background or pick_background(cfg)
         bg_is_video = bg is not None and Path(bg).suffix.lower() in VIDEO_EXT
@@ -385,26 +477,6 @@ def render(script_text, topic, out_path, cfg, background=None):
                 last = f"cd{i}"
                 idx += 1
 
-        pb = cfg.get("progress_bar", {})
-        if pb.get("enabled"):
-            fill = "0x" + pb.get("color", "#FFD34D").lstrip("#")
-            track = "0x" + pb.get("track_color", "#FFFFFF").lstrip("#")
-            th = int(pb.get("height", 10))
-            mb = int(pb.get("margin_bottom", 60))
-            mx = int(pb.get("side_margin", 0))
-            y = H - mb - th
-            track_a = float(pb.get("track_opacity", 0.25))
-            fill_a = float(pb.get("fill_opacity", 1.0))
-            bar_w = W - 2 * mx
-            # прогресс 0..1 идёт вместе с прокруткой текста; на аутро полоса полная
-            prog = f"min(1,t/{scroll_dur:.3f})"
-            filters.append(
-                f"[{last}]drawbox=x={mx}:y={y}:w={bar_w}:h={th}:"
-                f"color={track}@{track_a}:t=fill,"
-                f"drawbox=x={mx}:y={y}:w='{bar_w}*{prog}':h={th}:"
-                f"color={fill}@{fill_a}:t=fill[v_pb]")
-            last = "v_pb"
-
         outro_p = build_outro(cfg, tmp)
         if outro_p:
             inputs += ["-i", str(outro_p)]
@@ -413,15 +485,54 @@ def render(script_text, topic, out_path, cfg, background=None):
             last = "vout"
             idx += 1
 
+        # ---- прогресс-бар сверху (рисуется поверх всего) ----
+        pb = cfg.get("progress_bar", {})
+        if pb.get("enabled"):
+            last, idx = add_progress_bar(filters, inputs, idx, last, cfg, tmp,
+                                         cd_dur, scroll_dur, W, H)
+
+        # ---- звук: музыка отсчёта → фоновая ----
+        fo = cfg["audio"]["fade_out_seconds"]
+        intro = pick_intro_music(cfg)
         music = pick_music(cfg)
         amap = []
+        aparts = []
+        intro_idx = bg_a_idx = None
+        if intro and cd_dur > 0:
+            inputs += ["-i", str(intro)]
+            intro_idx = idx
+            idx += 1
         if music:
             inputs += ["-stream_loop", "-1", "-i", str(music)]
+            bg_a_idx = idx
+            idx += 1
+
+        if intro_idx is not None:
+            iv = float(cfg["audio"].get("intro_volume", 0.5))
+            aparts.append(f"[{intro_idx}:a]atrim=0:{cd_dur:.3f},asetpts=PTS-STARTPTS,"
+                          f"volume={iv},afade=t=out:st={max(0, cd_dur - 0.4):.2f}:d=0.4[aintro]")
+        if bg_a_idx is not None:
             vol = cfg["audio"]["music_volume"]
-            fo = cfg["audio"]["fade_out_seconds"]
-            filters.append(f"[{idx}:a]volume={vol},afade=t=out:st={max(0, total - fo):.2f}"
-                           f":d={fo}[aout]")
-            amap = ["-map", "[aout]", "-c:a", "aac", "-b:a", "128k", "-shortest"]
+            delay = int(cd_dur * 1000) if intro_idx is not None else 0
+            seg = f"[{bg_a_idx}:a]volume={vol},atrim=0:{max(0.1, total - cd_dur if intro_idx is not None else total):.3f},asetpts=PTS-STARTPTS"
+            if delay:
+                seg += f",adelay={delay}|{delay}"
+            seg += "[abg]"
+            aparts.append(seg)
+
+        src = None
+        if intro_idx is not None and bg_a_idx is not None:
+            aparts.append("[aintro][abg]amix=inputs=2:normalize=0:dropout_transition=0[amixed]")
+            src = "[amixed]"
+        elif intro_idx is not None:
+            src = "[aintro]"
+        elif bg_a_idx is not None:
+            src = "[abg]"
+
+        if src:
+            aparts.append(f"{src}afade=t=out:st={max(0, total - fo):.2f}:d={fo}[aout]")
+            filters += aparts
+            amap = ["-map", "[aout]", "-c:a", "aac", "-b:a", "128k"]
             idx += 1
 
         out_path = Path(out_path)

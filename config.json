@@ -20,7 +20,7 @@
     "mode": "random",
     "file": null,
     "_mode_help": "random = случайный файл из папки; fixed = всегда background.file; rotate = по кругу, порядок запоминается в state.json",
-    "darken": 0.0,
+    "darken": 0.28,
     "blur": 0,
     "_help": "darken 0..1 — насколько затемнить фон под текст. blur 0..20 — размытие в пикселях. Поддерживаются .jpg .png .mp4 .mov"
   },
@@ -49,7 +49,7 @@
   "scroll": {
     "mode": "seconds_per_line",
     "_mode_help": "seconds_per_line = задаёшь темп чтения (рекомендуется). pixels_per_second = задаёшь скорость в пикселях.",
-    "seconds_per_line": 1.1,
+    "seconds_per_line": 1.6,
     "pixels_per_second": 72,
     "start_offset_lines": 0.0,
     "tail_seconds": 1.5,
@@ -73,6 +73,10 @@
   "audio": {
     "music_folder": "music",
     "music_volume": 0.12,
+    "intro_folder": "music_intro",
+    "intro_file": null,
+    "intro_volume": 0.5,
+    "_intro_help": "Трек на время отсчёта 3-2-1. Положи файл в папку music_intro (или укажи конкретный путь в intro_file). Сначала играет он, затем — фоновая музыка из music. intro_volume обычно громче фоновой.",
     "fade_out_seconds": 2.0,
     "tts": {
       "enabled": false,
@@ -82,21 +86,24 @@
 
   "progress_bar": {
     "enabled": true,
-    "height": 10,
-    "margin_bottom": 60,
-    "side_margin": 0,
+    "margin_top": 70,
+    "side_margin": 60,
+    "label": "YOUR PROGRESS",
+    "label_size": 30,
+    "gap": 24,
+    "height": 8,
+    "knob_radius": 14,
     "color": "#FFD34D",
     "track_color": "#FFFFFF",
-    "track_opacity": 0.22,
-    "fill_opacity": 1.0,
-    "_help": "Полоса внизу кадра, растёт по мере прокрутки текста. height — толщина, margin_bottom — отступ от низа, side_margin — поля слева/справа (0 = во всю ширину). color — цвет заполнения, track — цвет пустой части."
+    "track_opacity": 0.25,
+    "_help": "Верхний прогресс-бар как на референсе: подпись label слева, таймер MM:SS / MM:SS справа, полоса с круглым бегунком. Прогресс = время чтения (обнуляется во время отсчёта). margin_top — отступ сверху, side_margin — поля по бокам, gap — зазор между подписью и полосой, height — толщина полосы, knob_radius — радиус бегунка (0 = без бегунка)."
   },
 
   "outro": {
     "enabled": true,
     "seconds": 2.5,
-    "line1": "Well done!",
-    "line2": "Keep speaking every day.",
+    "line1": "Now say it again —",
+    "line2": "without looking.",
     "handle_footer": true
   },
 
