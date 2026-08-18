@@ -1,5 +1,5 @@
 {
-  "topic_index_morning": 7,
+  "topic_index_morning": 8,
   "recent_openings": [
     "Hello, and welcome back. Today, let's",
     "Good morning, everyone. Let's talk about",
@@ -9,7 +9,8 @@
     "Good evening, everyone. Let's think about",
     "Thanks for tuning in today. Let's",
     "Welcome back, everyone. Let's explore music",
-    "Hello everyone, glad you're here. Let's"
+    "Hello everyone, glad you're here. Let's",
+    "Hey everyone, let's talk about pets"
   ],
   "topic_index_evening": 2
 }
