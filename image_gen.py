@@ -51,9 +51,17 @@ def generate_image(scene, cfg, out_path):
         print("[image] нет OPENAI_API_KEY — фон будет боке")
         return None
 
+    prompt = build_prompt(scene, cfg)
+    # печатаем полный запрос в лог и кладём рядом с картинкой — чтобы можно было посмотреть/поправить
+    print(f"[image] GPT-запрос: {prompt}")
+    try:
+        Path(out_path).parent.mkdir(parents=True, exist_ok=True)
+        Path(str(Path(out_path).with_suffix("")) + ".prompt.txt").write_text(prompt, encoding="utf-8")
+    except Exception:
+        pass
     body = json.dumps({
         "model": ic.get("model", "gpt-image-1"),
-        "prompt": build_prompt(scene, cfg),
+        "prompt": prompt,
         "size": ic.get("size", "1024x1536"),
         "quality": ic.get("quality", "medium"),
         "n": 1,
