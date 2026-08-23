@@ -1,12 +1,16 @@
 name: publish
 
-# Время в UTC. Москва = UTC+3, то есть 06:00 UTC = 09:00 МСК.
-# Чтобы добавить слот: новая строка cron здесь + запись в SLOT_MAP ниже + слот в config.json.
-# GitHub может задержать запуск по расписанию на 5-30 минут в часы пик — это нормально.
+# Время в UTC. Москва = UTC+3, то есть 04:00 UTC = 07:00 МСК.
+# Чтобы добавить/убрать слот: строка cron здесь + запись в SLOT_MAP ниже + слот в config.json.
+# Точное время выхода дополнительно "плавает" из-за случайной задержки (см. шаг ниже)
+# и собственной задержки GitHub (5-30 мин в часы пик) — это нормально и даже желательно.
 on:
   schedule:
-    - cron: "0 6 * * *"     # morning → 09:00 МСК
-    - cron: "0 16 * * *"    # evening → 19:00 МСК
+    # Минуты НЕ круглые специально: на :00 у GitHub пик нагрузки и запуск чаще пропускается.
+    - cron: "17 4 * * *"    # morning   → ~07:17 МСК
+    - cron: "23 9 * * *"    # noon      → ~12:23 МСК
+    - cron: "41 14 * * *"   # afternoon → ~17:41 МСК
+    - cron: "12 18 * * *"   # evening   → ~21:12 МСК
   workflow_dispatch:
     inputs:
       slot:
@@ -47,7 +51,7 @@ jobs:
         id: slot
         env:
           SLOT_MAP: |
-            {"0 6 * * *": "morning", "0 16 * * *": "evening"}
+            {"17 4 * * *": "morning", "23 9 * * *": "noon", "41 14 * * *": "afternoon", "12 18 * * *": "evening"}
           SCHEDULE: ${{ github.event.schedule }}
           MANUAL_SLOT: ${{ inputs.slot }}
         run: |
@@ -58,9 +62,20 @@ jobs:
           print(f"name={slot}")
           PY
 
+      - name: Случайная задержка (время выхода «плавает»)
+        if: github.event_name == 'schedule'
+        run: |
+          MAX=$(python3 -c "import json;print(int(json.load(open('config.json'))['publish'].get('jitter_minutes',0)))")
+          if [ "$MAX" -gt 0 ]; then
+            SEC=$(( RANDOM % (MAX * 60 + 1) ))
+            echo "Жду ${SEC} с (до ${MAX} мин), чтобы время публикации было не ровным"
+            sleep "$SEC"
+          fi
+
       - name: Собрать и выложить ролик
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
@@ -82,14 +97,25 @@ jobs:
             out/**/thumbnail.jpg
             out/**/metadata.json
             out/**/script.txt
+            thumbnails/*.jpg
           retention-days: 7
           if-no-files-found: warn
 
-      - name: Запомнить очередь тем
-        if: success()
+      - name: Запомнить очередь тем и сохранить обложки
+        if: always()   # сохраняем прогресс даже если загрузка упала — иначе тема повторится
         run: |
-          git config user.name "speakloud-bot"
+          git config user.name "speakstage-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add state.json
-          git diff --staged --quiet || git commit -m "state: ${{ steps.slot.outputs.name }} run ${{ github.run_number }}"
-          git push
+          git pull --rebase --autostash || true
+          git add state.json thumbnails
+          if git diff --staged --quiet; then
+            echo "нечего сохранять"
+          else
+            git commit -m "run ${{ github.run_number }}: ${{ steps.slot.outputs.name }} (state + обложка)"
+            if git push; then
+              echo "✓ очередь тем и обложка сохранены в репозиторий"
+            else
+              echo "::error::git push НЕ ПРОШЁЛ. Включи Settings → Actions → General → Workflow permissions → 'Read and write permissions'. Без этого тема будет повторяться, а обложки не будут сохраняться."
+              exit 1
+            fi
+          fi
