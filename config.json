@@ -2,8 +2,8 @@
   "_comment": "Все настройки ролика. Меняй значения здесь — код трогать не нужно.",
 
   "brand": {
-    "channel_name": "SpeakLoud English",
-    "handle": "@speakloud_english",
+    "channel_name": "Speak Stage English",
+    "handle": "@speakstage-EN",
     "accent_color": "#FFD34D",
     "text_color": "#FFFFFF"
   },
