@@ -77,18 +77,22 @@ def main():
 
     if a.upload:
         results = {}
+        # ловим и SystemExit тоже: сбой одной площадки не должен ронять весь прогон,
+        # если другая уже успешно загрузилась
         if cfg["publish"]["youtube"]["enabled"]:
             try:
                 import upload_youtube
                 results["youtube"] = upload_youtube.upload(outdir, cfg)
-            except Exception as e:
+            except (Exception, SystemExit) as e:
                 results["youtube"] = f"ошибка: {e}"
+                print(f"  [youtube] не загрузилось: {e}")
         if cfg["publish"]["tiktok"]["enabled"]:
             try:
                 import upload_tiktok
                 results["tiktok"] = upload_tiktok.upload(outdir, cfg)
-            except Exception as e:
+            except (Exception, SystemExit) as e:
                 results["tiktok"] = f"ошибка: {e}"
+                print(f"  [tiktok] не загрузилось: {e}")
         bundle["upload"] = results
         (outdir / "metadata.json").write_text(
             json.dumps(bundle, ensure_ascii=False, indent=2), encoding="utf-8")

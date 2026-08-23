@@ -59,7 +59,10 @@ Also write publishing metadata:
   audience behind him".
 
 Return ONLY one line of minified valid JSON, no markdown fence, no text before or after.
-No real line breaks inside strings.
+CRITICAL JSON RULES so it always parses:
+- No real line breaks inside strings.
+- NEVER use the double-quote character (") anywhere inside any value. If you need to quote
+  a word or speech, use single quotes ' instead. Asterisks * in thumb_title are fine.
 {{"script": "...", "title": "...", "thumb_title": "...", "hook": "one short line", "image_prompt": "...", "summary": "one sentence in English", "tags": ["15 lowercase keywords"], "topic_label_ru": "тема 1-2 словами ЗАГЛАВНЫМИ"}}"""
 
 
@@ -106,7 +109,7 @@ def pick_topic(cfg, slot, explicit=None):
     return pool[i]
 
 
-def call_claude(prompt, model, max_tokens=2000):
+def call_claude(prompt, model, max_tokens=3000):
     key = (os.environ.get("ANTHROPIC_API_KEY") or "").strip().strip('"').strip("'")
     if not key:
         raise RuntimeError("нет ANTHROPIC_API_KEY")
@@ -143,14 +146,22 @@ def call_claude(prompt, model, max_tokens=2000):
 def parse_json_loose(text):
     text = text.strip()
     text = re.sub(r"^```(?:json)?|```$", "", text, flags=re.M).strip()
+    # «умные» кавычки → простые, чтобы не ломали разбор
+    text = (text.replace("“", "'").replace("”", "'")
+                .replace("‘", "'").replace("’", "'"))
     m = re.search(r"\{.*\}", text, re.S)
     candidate = m.group(0) if m else text
-    try:
-        return json.loads(candidate)
-    except json.JSONDecodeError:
-        # частая беда: живые переводы строк внутри строковых значений — экранируем и пробуем снова
-        fixed = re.sub(r'(?<!\\)\n', r'\\n', candidate)
-        return json.loads(fixed)
+    attempts = [
+        candidate,
+        re.sub(r'(?<!\\)\n', r'\\n', candidate),   # живые переводы строк → \n
+    ]
+    last_err = None
+    for cand in attempts:
+        try:
+            return json.loads(cand)
+        except json.JSONDecodeError as e:
+            last_err = e
+    raise last_err
 
 
 def fallback(topic, cfg):

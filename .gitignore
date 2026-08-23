@@ -11,6 +11,8 @@ out/
 # музыка обычно лицензионная — держи локально или проверь права
 music/*
 !music/.gitkeep
+music_intro/*
+!music_intro/.gitkeep
 
 __pycache__/
 *.pyc

@@ -168,7 +168,7 @@
       "made_for_kids": false
     },
     "tiktok": {
-      "enabled": true,
+      "enabled": false,
       "privacy": "PUBLIC_TO_EVERYONE",
       "_note": "Публичная публикация возможна только после аудита приложения TikTok. До аудита ролики уходят в черновики аккаунта."
     }

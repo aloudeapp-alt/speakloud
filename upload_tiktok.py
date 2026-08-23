@@ -55,7 +55,7 @@ def access_token():
     need = ["TIKTOK_CLIENT_KEY", "TIKTOK_CLIENT_SECRET", "TIKTOK_REFRESH_TOKEN"]
     missing = [k for k in need if not os.environ.get(k)]
     if missing:
-        raise SystemExit("Нет переменных в .env: " + ", ".join(missing))
+        raise RuntimeError("Нет переменных в .env: " + ", ".join(missing))
     body = urllib.parse.urlencode({
         "client_key": os.environ["TIKTOK_CLIENT_KEY"],
         "client_secret": os.environ["TIKTOK_CLIENT_SECRET"],
@@ -67,7 +67,7 @@ def access_token():
     with urllib.request.urlopen(req, timeout=60) as r:
         data = json.loads(r.read())
     if "access_token" not in data:
-        raise SystemExit(f"TikTok OAuth не дал токен: {data}")
+        raise RuntimeError(f"TikTok OAuth не дал токен: {data}")
     return data["access_token"]
 
 
@@ -116,7 +116,7 @@ def upload(outdir, cfg=None, mode=None):
 
     data = res.get("data") or {}
     if not data.get("upload_url"):
-        raise SystemExit(f"TikTok не вернул upload_url: {res}")
+        raise RuntimeError(f"TikTok не вернул upload_url: {res}")
     _upload_file(data["upload_url"], video)
 
     status = _post(f"{API}/v2/post/publish/status/fetch/",

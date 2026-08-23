@@ -55,7 +55,7 @@ def get_service():
             creds.refresh(Request())
         else:
             if not CLIENT_SECRET.is_file():
-                raise SystemExit("Нет client_secret.json — смотри инструкцию в шапке файла")
+                raise RuntimeError("Нет client_secret.json и нет YT_* секретов — см. инструкцию")
             creds = InstalledAppFlow.from_client_secrets_file(
                 str(CLIENT_SECRET), SCOPES).run_local_server(port=0)
         TOKEN.write_text(creds.to_json())
