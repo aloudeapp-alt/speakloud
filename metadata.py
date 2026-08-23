@@ -16,8 +16,8 @@ BASE_TAGS = [
 
 YT_DESC = """{hook}
 
-Read this monologue out loud, following the text on screen. Speak clearly, keep your pace steady,
-and finish every sentence — that is the whole exercise.
+Read it out loud with the countdown. Say every word, keep going, don't stop to fix mistakes —
+that is how speaking gets easier.
 
 TOPIC: {topic}
 LEVEL: {level}
@@ -25,9 +25,9 @@ HOW TO PRACTISE
 1. Wait for the 3-2-1 countdown.
 2. Read aloud, out loud — not in your head.
 3. Watch again and record yourself.
-4. Third time: say it in your own words, without reading.
+4. Say it once more in your own words.
 
-New monologues every day. Subscribe and practise with us — {handle}
+Become confident speaking English. New video every day — {handle}
 
 {hashtags}"""
 

@@ -455,7 +455,36 @@ def add_progress_bar(filters, inputs, idx, last, cfg, tmp, cd_dur, scroll_dur, W
 
 # ---------------------------------------------------------------- рендер
 
-def render(script_text, topic, out_path, cfg, background=None):
+def _prepend_cover(cover_img, main_video, final_out, seconds, cfg, has_audio, tmp):
+    """Приклеивает статичную заставку (обложку) в начало ролика.
+    Нужно, потому что YouTube для Shorts берёт превью из кадра видео,
+    а кастомную картинку через API игнорирует."""
+    W, H = cfg["video"]["width"], cfg["video"]["height"]
+    fps = cfg["video"]["fps"]
+    vchain = (f"[0:v]scale={W}:{H}:force_original_aspect_ratio=increase,"
+              f"crop={W}:{H},setsar=1,fps={fps}[cv];[cv][2:v]concat=n=2:v=1:a=0[v]")
+    if has_audio:
+        inputs = ["-loop", "1", "-t", f"{seconds}", "-i", str(cover_img),
+                  "-f", "lavfi", "-t", f"{seconds}", "-i", "anullsrc=r=44100:cl=stereo",
+                  "-i", str(main_video)]
+        fc = vchain + ";[1:a][2:a]concat=n=2:v=0:a=1[a]"
+        amap = ["-map", "[a]", "-c:a", "aac", "-b:a", "128k"]
+    else:
+        inputs = ["-loop", "1", "-t", f"{seconds}", "-i", str(cover_img),
+                  "-i", str(main_video)]
+        vchain = (f"[0:v]scale={W}:{H}:force_original_aspect_ratio=increase,"
+                  f"crop={W}:{H},setsar=1,fps={fps}[cv];[cv][1:v]concat=n=2:v=1:a=0[v]")
+        fc = vchain
+        amap = []
+    cmd = (["ffmpeg", "-y", "-hide_banner", "-loglevel", "error"] + inputs +
+           ["-filter_complex", fc, "-map", "[v]"] + amap +
+           ["-r", str(fps), "-c:v", "libx264", "-preset", "medium",
+            "-crf", str(cfg["video"]["quality_crf"]),
+            "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(final_out)])
+    subprocess.run(cmd, check=True)
+
+
+def render(script_text, topic, out_path, cfg, background=None, cover_image=None):
     tmp = Path(tempfile.mkdtemp(prefix="speakloud_"))
     try:
         W, H = cfg["video"]["width"], cfg["video"]["height"]
@@ -592,18 +621,32 @@ def render(script_text, topic, out_path, cfg, background=None):
 
         out_path = Path(out_path)
         out_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # если есть обложка-заставка — рендерим основное видео во временный файл,
+        # потом приклеиваем заставку в начало
+        cover_cfg = cfg.get("cover", {})
+        use_cover = bool(cover_image and cover_cfg.get("enabled") and Path(cover_image).is_file())
+        render_target = (tmp / "main.mp4") if use_cover else out_path
+
         cmd = (["ffmpeg", "-y", "-hide_banner", "-loglevel", "error"] + inputs +
                ["-filter_complex", ";".join(filters),
                 "-map", f"[{last}]"] + amap +
                ["-t", f"{total:.3f}", "-r", str(cfg["video"]["fps"]),
                 "-c:v", "libx264", "-preset", "medium",
                 "-crf", str(cfg["video"]["quality_crf"]),
-                "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(out_path)])
+                "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(render_target)])
         subprocess.run(cmd, check=True)
+
+        cover_dur = 0.0
+        if use_cover:
+            cover_dur = float(cover_cfg.get("seconds", 0.8))
+            _prepend_cover(cover_image, render_target, out_path, cover_dur,
+                           cfg, has_audio=bool(amap), tmp=tmp)
 
         return {
             "video": str(out_path),
-            "duration_sec": round(total, 2),
+            "cover_seconds": round(cover_dur, 2),
+            "duration_sec": round(total + cover_dur, 2),
             "lines": len(lines),
             "words": len(script_text.split()),
             "background": str(bg),

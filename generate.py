@@ -22,28 +22,45 @@ ROOT = Path(__file__).resolve().parent
 STATE = ROOT / "state.json"
 API_URL = "https://api.anthropic.com/v1/messages"
 
-PROMPT = """You write short monologues for an English public-speaking practice channel.
-Viewers read the text aloud from a teleprompter that scrolls upward, so the text must sound
-natural when spoken out loud, not written.
+PROMPT = """You write ~{words}-word monologues for a channel that helps people BECOME CONFIDENT
+speaking English. Viewers read the text aloud from a teleprompter that scrolls upward, so it must
+sound natural spoken, not written. The mission is confidence, not information.
 
 Topic: {topic}
 CEFR level: {level}
-Target length: about {words} words.
+{hook_line}
+
+Structure the script in THIS order — this matters more than anything else:
+1. HOOK: the first line grabs attention in a feed. A direct question to the viewer, or a bold,
+   slightly counterintuitive statement. One short sentence. (Use the suggested hook if given.)
+2. CURIOSITY: immediately flip the expectation — say the obvious answer is wrong, or promise the
+   real reason. One or two short sentences, e.g. "It's not because you're bad at speaking."
+3. BODY: now answer it. Develop ONE clear, encouraging idea they can actually use. This is the
+   part they practise reading aloud.
+4. CLOSE: one confident, motivating line.
 
 Rules:
-- Open the way a speaker opens a talk to a room ("Good afternoon, everyone." style), then develop
-  one clear idea, then land on a closing thought. No lists, no headings, no emoji, no stage directions.
-- Short sentences. Most of them under 12 words. This matters: each sentence becomes 2-4 lines on screen.
+- Speak TO the viewer ("you"), warm and encouraging.
+- Short sentences. Most under 12 words. Each becomes 2-4 lines on screen.
 - Simple, high-frequency vocabulary for the level. No idioms a learner would stumble on.
-- Vary the opening from these recently used ones so the channel does not feel repetitive: {recent}
-- Include a couple of natural pauses using commas and full stops, so the speaker can breathe.
+- Do NOT open with greetings like "Good afternoon, everyone" or "Today I will talk about".
+  Start straight with the hook.
+- No lists, no headings, no emoji, no stage directions.
+- Vary the wording from these recent openings: {recent}
 
-Also write the publishing metadata. The title must work as a hook in a feed, mention the topic, and
-stay under 70 characters. Tags: 15 lowercase keywords, no '#'.
+Also write publishing metadata:
+- title: the hook itself, feed-optimised, under 70 characters.
+- thumb_title: 4-7 words for the thumbnail, with *asterisks* around the 2-4 punchiest words.
+  Example: "Why your hands *shake before you speak*".
+- image_prompt: a vivid one-sentence description of a PHOTOREALISTIC scene for the thumbnail
+  background that fits the topic emotionally (like a real person feeling this, or a fitting object).
+  One clear human subject or object, real photo style. Describe only WHAT is in the shot — no style
+  words, no text. Example: "a nervous young man taking a deep breath before speaking, blurred
+  audience behind him".
 
 Return ONLY one line of minified valid JSON, no markdown fence, no text before or after.
-Inside string values use no real line breaks — keep each value as one continuous string.
-{{"script": "...", "title": "...", "hook": "one short line, max 8 words", "summary": "one sentence about the topic in English", "tags": ["..."], "topic_label_ru": "тема одним-двумя словами по-русски, ЗАГЛАВНЫМИ"}}"""
+No real line breaks inside strings.
+{{"script": "...", "title": "...", "thumb_title": "...", "hook": "one short line", "image_prompt": "...", "summary": "one sentence in English", "tags": ["15 lowercase keywords"], "topic_label_ru": "тема 1-2 словами ЗАГЛАВНЫМИ"}}"""
 
 
 def load_env():
@@ -157,10 +174,14 @@ def generate(cfg, slot, explicit_topic=None):
     level = slot_def(cfg, slot).get("level", cfg["content"]["level"])
     st = read_state()
     recent = st.get("recent_openings", [])[-6:]
+    hook = topic.get("hook")
+    hook_line = (f'Suggested hook (open the script with this exact line, polish only if needed): "{hook}"'
+                 if hook else "Open with your own strong hook.")
     prompt = PROMPT.format(
         topic=topic["en"],
         level=level,
         words=cfg["content"]["words_target"],
+        hook_line=hook_line,
         recent="; ".join(recent) or "none yet",
     )
     source = "fallback"
@@ -181,18 +202,30 @@ def generate(cfg, slot, explicit_topic=None):
         data = fallback(topic, cfg)
 
     data.setdefault("topic_en", topic["en"])
+    # хук и заголовок: если модель/заготовка не дали — берём хук темы
+    if hook:
+        data.setdefault("hook", hook)
+        data.setdefault("title", hook)
+    data.setdefault("hook", data.get("title") or topic["en"])
+    data.setdefault("title", data["hook"])
+    # заголовок для обложки: с *акцентами*; если нет — берём заголовок
+    data.setdefault("thumb_title", data.get("title") or topic["en"])
+    # описание сцены для фоновой картинки; если модель не дала — шаблон по теме
+    data.setdefault("image_prompt", f"a person expressing the feeling of: {topic['en']}, "
+                                    f"real candid photo, blurred neutral background")
     # Подпись под отсчётом. Язык выбирается один раз в config → content.topic_label_source:
     #   "en" — английское название (поле en), одинаково для всех тем;
     #   "ru"/"label" — то, что вписано в topics.json (поле label, иначе ru).
     # Значение из ответа Claude игнорируем, чтобы на экране было предсказуемо.
     label_src = cfg["content"].get("topic_label_source", "en")
     if source == "fallback":
-        base_en = data.get("topic_en", topic["en"])
-        base_field = data.get("topic_label_ru") or base_en
+        label = data.get("topic_label_ru") or data.get("topic_en", topic["en"])
+    elif topic.get("label"):
+        label = topic["label"]  # короткая подпись из topics.json — приоритет
+    elif label_src == "en":
+        label = topic["en"]
     else:
-        base_en = topic["en"]
-        base_field = topic.get("label") or topic.get("ru") or topic["en"]
-    label = base_en if label_src == "en" else base_field
+        label = topic.get("ru") or topic["en"]
     data["topic_label"] = str(label).upper()
     data["topic_label_ru"] = data["topic_label"]  # обратная совместимость
     data["slot"] = slot

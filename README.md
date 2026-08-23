@@ -80,7 +80,11 @@ python3 run.py --slot evening --upload
 
 ```
 ANTHROPIC_API_KEY=sk-ant-...
+OPENAI_API_KEY=sk-...
 ```
+
+`OPENAI_API_KEY` нужен для генерации фоновых картинок обложек по теме. Без него обложки
+строятся на цветном боке-фоне — конвейер не падает.
 
 Без ключа конвейер не падает — берёт заготовку из `fallback_scripts.json`.
 
@@ -149,6 +153,9 @@ backgrounds/         твои фоны
 fonts/               твои шрифты
 music/               фоновая музыка (опционально)
 music_intro/         музыка на отсчёт 3-2-1 (опционально)
+thumbnails/          готовые обложки <имя-ролика>.jpg для ручной загрузки
+image_gen.py         генерация фона обложки через OpenAI Images
+cover_thumbnail.py   брендовая обложка (хук + акценты + стрелка + #Shorts)
 out/                 готовые ролики: video.mp4, thumbnail.jpg, script.txt, metadata.json
 ```
 

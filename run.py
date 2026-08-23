@@ -40,9 +40,32 @@ def main():
     outdir.mkdir(parents=True, exist_ok=True)
     (outdir / "script.txt").write_text(data["script"], encoding="utf-8")
 
+    # фон выбираем заранее, чтобы фон видео был известен
+    bg = a.background or render.pick_background(cfg)
+
+    # брендовая обложка в стиле референса (хук + акценты) на боке-фоне.
+    # сохраняем и в папку ролика, и в общую thumbnails/ с именем ролика.
+    import cover_thumbnail
+    tb = cfg.get("thumbnail", {})
+    thumb = str(outdir / "thumbnail.jpg")
+    if tb.get("enabled", True):
+        # фон обложки: картинка по теме от OpenAI (если включено и есть ключ), иначе боке
+        subject = None
+        if cfg.get("image", {}).get("enabled"):
+            import image_gen
+            subject = image_gen.generate_image(data.get("image_prompt", data["topic_en"]),
+                                               cfg, outdir / "background.png")
+        cover_thumbnail.make_cover(data.get("thumb_title") or data.get("title"),
+                                   subject, cfg, thumb)
+        # копия в общую папку с именем ролика — для ручной загрузки на YouTube
+        tdir = ROOT / tb.get("folder", "thumbnails")
+        tdir.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(thumb, tdir / f"{meta['slug']}.jpg")
+    else:
+        metadata.make_thumbnail(data, cfg, bg, thumb)
+
     info = render.render(data["script"], data["topic_label_ru"],
-                         outdir / "video.mp4", cfg, a.background)
-    thumb = metadata.make_thumbnail(data, cfg, info["background"], outdir / "thumbnail.jpg")
+                         outdir / "video.mp4", cfg, background=bg, cover_image=thumb)
 
     bundle = {"generated": data, "render": info, "publish": meta, "thumbnail": thumb}
     (outdir / "metadata.json").write_text(

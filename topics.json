@@ -1,167 +1,27 @@
 {
-  "_comment": "Банк тем. morning — простые бытовые, evening — рабочие и абстрактные. Ротация автоматическая. Поля: en — по нему пишется монолог (всегда английский); ru — подпись под отсчётом 3-2-1 на экране (пиши на любом языке — что впишешь, то и покажется, хоть 'FASHION', хоть 'МОДА'). Можно вместо ru добавить поле label — оно приоритетнее. Пример: {\"en\": \"Fashion\", \"label\": \"FASHION\"}.",
+  "_comment": "Концепция: помочь стать УВЕРЕННЫМ в разговорном английском. Поля темы: en — по нему пишется монолог; hook — цепляющая первая фраза, с неё начинается ролик; label — короткая подпись под отсчётом и на обложке. morning — базовые темы про уверенность, evening — ситуации (интервью, звонки, презентации). Добавляй свои строки в том же виде.",
   "morning": [
-    {
-      "en": "Fashion",
-      "ru": "Мода"
-    },
-    {
-      "en": "Coffee culture",
-      "label": "COFFEE"
-    },
-    {
-      "en": "Travelling alone",
-      "ru": "Путешествия"
-    },
-    {
-      "en": "Social media",
-      "ru": "Соцсети"
-    },
-    {
-      "en": "Living in a big city",
-      "ru": "Большой город"
-    },
-    {
-      "en": "Cooking at home",
-      "ru": "Готовка дома"
-    },
-    {
-      "en": "Music and mood",
-      "ru": "Музыка"
-    },
-    {
-      "en": "Pets",
-      "ru": "Домашние животные"
-    },
-    {
-      "en": "Sport and habits",
-      "ru": "Спорт и привычки"
-    },
-    {
-      "en": "Reading books",
-      "ru": "Чтение"
-    },
-    {
-      "en": "Weekends",
-      "ru": "Выходные"
-    },
-    {
-      "en": "Learning languages",
-      "ru": "Языки"
-    },
-    {
-      "en": "Shopping online",
-      "ru": "Онлайн-покупки"
-    },
-    {
-      "en": "Public transport",
-      "ru": "Транспорт"
-    },
-    {
-      "en": "Seasons and weather",
-      "ru": "Времена года"
-    },
-    {
-      "en": "Friendship",
-      "ru": "Дружба"
-    },
-    {
-      "en": "Sleep and energy",
-      "ru": "Сон и энергия"
-    },
-    {
-      "en": "Street food",
-      "ru": "Уличная еда"
-    },
-    {
-      "en": "Photography",
-      "ru": "Фотография"
-    },
-    {
-      "en": "Home and comfort",
-      "ru": "Дом и уют"
-    }
+    {"en": "Why you freeze when speaking English", "hook": "Why do you freeze when speaking English?", "label": "SPEAKING ANXIETY"},
+    {"en": "Why you forget words you already know", "hook": "Why do you forget words you already know?", "label": "VOCABULARY"},
+    {"en": "Why your English sounds different in your head", "hook": "Why does your English sound different in your head?", "label": "PRONUNCIATION"},
+    {"en": "Stop apologising when you speak English", "hook": "Stop saying sorry when you speak English", "label": "CONFIDENCE"},
+    {"en": "Why you speak English too slowly", "hook": "This is why you speak English too slowly", "label": "FLUENCY"},
+    {"en": "Why your English mistakes are helping you", "hook": "Your English mistakes are actually helping you", "label": "MISTAKES"},
+    {"en": "Stop translating English in your head", "hook": "Stop translating English in your head", "label": "THINK IN ENGLISH"},
+    {"en": "You dont need perfect English to sound confident", "hook": "You don't need perfect English to sound confident", "label": "CONFIDENCE"},
+    {"en": "Why small talk in English feels so hard", "hook": "Why is small talk in English so hard?", "label": "SMALL TALK"},
+    {"en": "Does your accent really matter", "hook": "Does your accent really matter?", "label": "ACCENT"}
   ],
   "evening": [
-    {
-      "en": "Remote work",
-      "ru": "Удалённая работа"
-    },
-    {
-      "en": "Job interviews",
-      "ru": "Собеседования"
-    },
-    {
-      "en": "Public speaking fear",
-      "ru": "Страх выступлений"
-    },
-    {
-      "en": "Artificial intelligence at work",
-      "ru": "AI на работе"
-    },
-    {
-      "en": "Feedback and criticism",
-      "ru": "Обратная связь"
-    },
-    {
-      "en": "Time management",
-      "ru": "Тайм-менеджмент"
-    },
-    {
-      "en": "Leadership",
-      "ru": "Лидерство"
-    },
-    {
-      "en": "Startups and risk",
-      "ru": "Стартапы"
-    },
-    {
-      "en": "Money and saving",
-      "ru": "Деньги"
-    },
-    {
-      "en": "Burnout",
-      "ru": "Выгорание"
-    },
-    {
-      "en": "Teamwork",
-      "ru": "Работа в команде"
-    },
-    {
-      "en": "Negotiation",
-      "ru": "Переговоры"
-    },
-    {
-      "en": "Career change",
-      "ru": "Смена карьеры"
-    },
-    {
-      "en": "Online education",
-      "ru": "Онлайн-образование"
-    },
-    {
-      "en": "Personal brand",
-      "ru": "Личный бренд"
-    },
-    {
-      "en": "Failure and lessons",
-      "ru": "Ошибки и уроки"
-    },
-    {
-      "en": "Work-life balance",
-      "ru": "Баланс работы и жизни"
-    },
-    {
-      "en": "Networking",
-      "ru": "Нетворкинг"
-    },
-    {
-      "en": "Decision making",
-      "ru": "Принятие решений"
-    },
-    {
-      "en": "The future of offices",
-      "ru": "Будущее офисов"
-    }
+    {"en": "Why your voice changes when you are nervous", "hook": "Your voice changes when you're nervous. Here's why.", "label": "NERVOUSNESS"},
+    {"en": "The worst thing you can say in an interview", "hook": "The worst thing you can say in an interview", "label": "INTERVIEWS"},
+    {"en": "Why work calls in English feel so scary", "hook": "Why do work calls in English feel so scary?", "label": "WORK CALLS"},
+    {"en": "What to do when your mind goes blank", "hook": "What do you do when your mind goes blank?", "label": "BLANKING OUT"},
+    {"en": "Why you say um so much in English", "hook": "Why do you say 'um' so much in English?", "label": "FILLER WORDS"},
+    {"en": "How to present in English without fear", "hook": "Terrified of presenting in English?", "label": "PRESENTATIONS"},
+    {"en": "Why native speakers make you nervous", "hook": "Why do native speakers make you nervous?", "label": "NATIVE SPEAKERS"},
+    {"en": "Why speaking clearly beats speaking fast", "hook": "Speaking fast won't make you fluent", "label": "CLARITY"},
+    {"en": "How to recover from a mistake mid-sentence", "hook": "You made a mistake mid-sentence. Now what?", "label": "RECOVERY"},
+    {"en": "You will never feel fully ready to speak", "hook": "Waiting to feel ready to speak English?", "label": "JUST START"}
   ]
 }

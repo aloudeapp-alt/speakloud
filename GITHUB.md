@@ -65,6 +65,7 @@ GitHub → **Settings → Secrets and variables → Actions → New repository s
 | Имя | Откуда |
 |---|---|
 | `ANTHROPIC_API_KEY` | console.anthropic.com → API Keys |
+| `OPENAI_API_KEY` | platform.openai.com → API keys (для картинок-фонов обложек; без него фон будет боке) |
 | `YT_CLIENT_ID` | вывод скрипта из шага 3 |
 | `YT_CLIENT_SECRET` | вывод скрипта из шага 3 |
 | `YT_REFRESH_TOKEN` | вывод скрипта из шага 3 |

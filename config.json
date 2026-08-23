@@ -2,8 +2,8 @@
   "_comment": "Все настройки ролика. Меняй значения здесь — код трогать не нужно.",
 
   "brand": {
-    "channel_name": "Speak Stage English",
-    "handle": "@speakstage-EN",
+    "channel_name": "SpeakLoud English",
+    "handle": "@speakloud_english",
     "accent_color": "#FFD34D",
     "text_color": "#FFFFFF"
   },
@@ -20,7 +20,7 @@
     "mode": "random",
     "file": null,
     "_mode_help": "random = случайный файл из папки; fixed = всегда background.file; rotate = по кругу, порядок запоминается в state.json",
-    "darken": 0.0,
+    "darken": 0.28,
     "blur": 0,
     "_help": "darken 0..1 — насколько затемнить фон под текст. blur 0..20 — размытие в пикселях. Поддерживаются .jpg .png .mp4 .mov"
   },
@@ -49,10 +49,10 @@
   "scroll": {
     "mode": "seconds_per_line",
     "_mode_help": "seconds_per_line = задаёшь темп чтения (рекомендуется). pixels_per_second = задаёшь скорость в пикселях.",
-    "seconds_per_line": 1.0,
+    "seconds_per_line": 1.6,
     "pixels_per_second": 72,
     "start_offset_lines": 0.0,
-    "tail_seconds": 1.0,
+    "tail_seconds": 1.5,
     "_help": "seconds_per_line 1.6 ≈ спокойный темп. Меньше = быстрее. tail_seconds — пауза после того, как ушла последняя строка."
   },
 
@@ -61,7 +61,7 @@
     "seconds_per_digit": 1.0,
     "digits": [3, 2, 1],
     "digit_size": 300,
-    "tip_text": "SPEAK CLEARLY. SPEAK CONFIDENTLY",
+    "tip_text": "ГОВОРИ ГРОМКО И ЧЁТКО",
     "tip_size": 52,
     "tip_y": 0.30,
     "topic_label_size": 62,
@@ -72,7 +72,7 @@
 
   "audio": {
     "music_folder": "music",
-    "music_volume": 0.9,
+    "music_volume": 0.12,
     "intro_folder": "music_intro",
     "intro_file": null,
     "intro_volume": 0.5,
@@ -86,7 +86,7 @@
 
   "progress_bar": {
     "enabled": true,
-    "margin_top": 90,
+    "margin_top": 70,
     "side_margin": 60,
     "label": "YOUR PROGRESS",
     "label_size": 30,
@@ -110,11 +110,33 @@
     "_help": "Текст плавно растворяется сверху, не наезжая на прогресс-бар. follow_progress_bar=true — высота затухания сама привязана к нижней границе бара (двигаешь margin_top бара — двигается и затухание). Чтобы настроить отдельно: follow_progress_bar=false и задай solid_until (px непрозрачной зоны сверху). feather — высота мягкого перехода в пикселях, strength — макс. плотность (1 = текст исчезает полностью), color — цвет затемнения (по умолчанию чёрный, подходит для тёмного фона)."
   },
 
+  "image": {
+    "enabled": true,
+    "model": "gpt-image-1",
+    "size": "1024x1536",
+    "quality": "medium",
+    "style": "cinematic photograph, dramatic soft lighting, shallow depth of field, dark moody background, professional, high detail, photorealistic",
+    "composition": "vertical composition, subject placed in the lower half, upper third dark and uncluttered to leave room for a title, no text, no words, no letters, no watermark, no logo",
+    "_help": "Фон обложки генерируется OpenAI Images по теме ролика (поле image_prompt от Claude), сверху ложится брендовый текст. Нужен ключ OPENAI_API_KEY (в .env локально и в секретах GitHub). enabled=false или отсутствие ключа → фон будет цветной боке. model: gpt-image-1 (лучше) или dall-e-3. size: 1024x1536 = вертикаль. quality: low/medium/high — влияет на цену (~2-15 центов за картинку). style/composition — единый стиль и требования к композиции под текст."
+  },
+
+  "thumbnail": {
+    "enabled": true,
+    "folder": "thumbnails",
+    "_help": "Брендовая обложка в стиле референса: шапка с логотипом, заголовок-хук с жёлтыми акцентами (*звёздочки* в thumb_title), стрелка, плашка #Shorts. Пока на цветном боке-фоне. Сохраняется в папку folder как <имя-ролика>.jpg — оттуда вручную грузишь на YouTube. Эта же картинка идёт стартовым кадром ролика. Позже сюда добавим фото человека по теме."
+  },
+
+  "cover": {
+    "enabled": true,
+    "seconds": 0.8,
+    "_help": "Стартовая заставка = та же вертикальная обложка, вклеенная первым кадром ролика. Нужна, потому что YouTube для Shorts берёт превью из кадра видео, а картинку через API не принимает. seconds — сколько держится заставка в начале (0.6–1.0 достаточно). enabled=false — без заставки."
+  },
+
   "outro": {
     "enabled": true,
     "seconds": 2.5,
-    "line1": "Great Job!",
-    "line2": "Keep speaking!",
+    "line1": "Now say it again —",
+    "line2": "without looking.",
     "handle_footer": true
   },
 
@@ -131,10 +153,10 @@
   "publish": {
     "_slots_help": "Слоты выпуска. name — то, что передаётся в run.py --slot. cron — БАЗОВОЕ время в UTC (Москва = UTC+3), это же значение прописывается в .github/workflows/publish.yml. pool — раздел из topics.json. level переопределяет content.level.",
     "slots": [
-      {"name": "morning",   "cron": "0 4 * * *",  "local": "~07:00 МСК", "pool": "morning", "level": "B1-B2"},
-      {"name": "noon",      "cron": "0 9 * * *",  "local": "~12:00 МСК", "pool": "morning", "level": "A2-B1"},
-      {"name": "afternoon", "cron": "0 14 * * *", "local": "~17:00 МСК", "pool": "evening", "level": "B2-C1"},
-      {"name": "evening",   "cron": "0 18 * * *", "local": "~21:00 МСК", "pool": "evening", "level": "B2-C1"}
+      {"name": "morning",   "cron": "17 4 * * *",  "local": "~07:17 МСК", "pool": "morning", "level": "B1-B2"},
+      {"name": "noon",      "cron": "23 9 * * *",  "local": "~12:23 МСК", "pool": "morning", "level": "A2-B1"},
+      {"name": "afternoon", "cron": "41 14 * * *", "local": "~17:41 МСК", "pool": "evening", "level": "B2-C1"},
+      {"name": "evening",   "cron": "12 18 * * *", "local": "~21:12 МСК", "pool": "evening", "level": "B2-C1"}
     ],
     "jitter_minutes": 20,
     "_jitter_help": "Случайный сдвиг старта: ролик выходит не ровно по cron, а в пределах +0..jitter_minutes минут после него. Так время публикации плавает. 0 = строго по расписанию. Помни: задержка расходует минуты GitHub Actions — на приватном репозитории держи <=20, на публичном минуты бесплатны и лимита нет.",
@@ -146,7 +168,7 @@
       "made_for_kids": false
     },
     "tiktok": {
-      "enabled": false,
+      "enabled": true,
       "privacy": "PUBLIC_TO_EVERYONE",
       "_note": "Публичная публикация возможна только после аудита приложения TikTok. До аудита ролики уходят в черновики аккаунта."
     }
