@@ -20,7 +20,7 @@
     "mode": "random",
     "file": null,
     "_mode_help": "random = случайный файл из папки; fixed = всегда background.file; rotate = по кругу, порядок запоминается в state.json",
-    "darken": 0.28,
+    "darken": 0.0,
     "blur": 0,
     "_help": "darken 0..1 — насколько затемнить фон под текст. blur 0..20 — размытие в пикселях. Поддерживаются .jpg .png .mp4 .mov"
   },
@@ -49,10 +49,10 @@
   "scroll": {
     "mode": "seconds_per_line",
     "_mode_help": "seconds_per_line = задаёшь темп чтения (рекомендуется). pixels_per_second = задаёшь скорость в пикселях.",
-    "seconds_per_line": 1.6,
+    "seconds_per_line": 1.0,
     "pixels_per_second": 72,
     "start_offset_lines": 0.0,
-    "tail_seconds": 1.5,
+    "tail_seconds": 1.0,
     "_help": "seconds_per_line 1.6 ≈ спокойный темп. Меньше = быстрее. tail_seconds — пауза после того, как ушла последняя строка."
   },
 
@@ -61,7 +61,7 @@
     "seconds_per_digit": 1.0,
     "digits": [3, 2, 1],
     "digit_size": 300,
-    "tip_text": "ГОВОРИ ГРОМКО И ЧЁТКО",
+    "tip_text": "SPEAK CLEARLY.SPEAK CONFIDENTLY",
     "tip_size": 52,
     "tip_y": 0.30,
     "topic_label_size": 62,
@@ -135,8 +135,8 @@
   "outro": {
     "enabled": true,
     "seconds": 2.5,
-    "line1": "Now say it again —",
-    "line2": "without looking.",
+    "line1": "Great Job!",
+    "line2": "Keep Speaking!",
     "handle_footer": true
   },
 
