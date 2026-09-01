@@ -1,7 +1,6 @@
 {
   "topic_index_morning": 12,
   "recent_openings": [
-    "Why do you freeze when speaking",
     "Why do you forget words you",
     "Why does your English sound different",
     "Your voice changes when you're nervous.",
@@ -40,9 +39,10 @@
     "Why do you say 'um' so",
     "Cooking is the cheapest therapy there",
     "This is why you speak English",
+    "You don't have a time problem.",
     "You don't have a time problem."
   ],
   "topic_index_afternoon": 10,
-  "topic_index_evening": 9,
+  "topic_index_evening": 10,
   "topic_index_noon": 9
 }
