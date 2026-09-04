@@ -1,7 +1,6 @@
 {
   "topic_index_morning": 15,
   "recent_openings": [
-    "Your morning coffee is not about",
     "The worst thing you can say",
     "The worst thing you can say",
     "Your first hour decides your whole",
@@ -40,9 +39,10 @@
     "Your English mistakes are actually helping",
     "Loud leaders are rarely the best",
     "Loud leaders are rarely the best",
-    "You don't need perfect English to"
+    "You don't need perfect English to",
+    "Cooking is the cheapest therapy there"
   ],
   "topic_index_afternoon": 12,
   "topic_index_evening": 12,
-  "topic_index_noon": 11
+  "topic_index_noon": 12
 }
