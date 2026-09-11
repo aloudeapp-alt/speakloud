@@ -1,7 +1,6 @@
 {
   "topic_index_morning": 22,
   "recent_openings": [
-    "This is why you speak English",
     "You don't have a time problem.",
     "You don't have a time problem.",
     "Stop translating English in your head.",
@@ -40,9 +39,10 @@
     "Changing career feels like starting from",
     "Waiting to feel ready to speak",
     "Reading is thinking with someone else's",
-    "Does your accent really matter? Most"
+    "Does your accent really matter? Most",
+    "Waiting to feel ready to speak"
   ],
-  "topic_index_afternoon": 18,
+  "topic_index_afternoon": 19,
   "topic_index_evening": 19,
   "topic_index_noon": 19
 }
