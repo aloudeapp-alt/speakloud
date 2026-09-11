@@ -1,7 +1,6 @@
 {
   "topic_index_morning": 22,
   "recent_openings": [
-    "Cooking is the cheapest therapy there",
     "This is why you speak English",
     "You don't have a time problem.",
     "You don't have a time problem.",
@@ -40,9 +39,10 @@
     "Pets listen without judging us. But",
     "Changing career feels like starting from",
     "Waiting to feel ready to speak",
-    "Reading is thinking with someone else's"
+    "Reading is thinking with someone else's",
+    "Does your accent really matter? Most"
   ],
   "topic_index_afternoon": 18,
   "topic_index_evening": 19,
-  "topic_index_noon": 18
+  "topic_index_noon": 19
 }
