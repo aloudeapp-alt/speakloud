@@ -1,7 +1,6 @@
 {
   "topic_index_morning": 23,
   "recent_openings": [
-    "Stop translating English in your head.",
     "You are not tired. You are",
     "Terrified of presenting in English? It's",
     "Terrified of presenting in English? It's",
@@ -40,9 +39,10 @@
     "Does your accent really matter? Most",
     "Waiting to feel ready to speak",
     "Teams rarely fail loudly. They drift.",
-    "Rest is not a reward. It"
+    "Rest is not a reward. It",
+    "Big goals fail. Small habits win."
   ],
   "topic_index_afternoon": 19,
   "topic_index_evening": 20,
-  "topic_index_noon": 19
+  "topic_index_noon": 20
 }
