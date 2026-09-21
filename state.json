@@ -1,7 +1,6 @@
 {
-  "topic_index_morning": 1,
+  "topic_index_morning": 2,
   "recent_openings": [
-    "Reading is thinking with someone else's",
     "Does your accent really matter? Most",
     "Waiting to feel ready to speak",
     "Teams rarely fail loudly. They drift.",
@@ -40,7 +39,8 @@
     "Why do you freeze when speaking",
     "You become a slightly different person",
     "Every yes is a no to",
-    "Silence is the most underrated speaking"
+    "Silence is the most underrated speaking",
+    "Your morning coffee is not about"
   ],
   "topic_index_afternoon": 28,
   "topic_index_evening": 29,
