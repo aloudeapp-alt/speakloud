@@ -1,7 +1,6 @@
 {
   "topic_index_morning": 4,
   "recent_openings": [
-    "We photograph moments instead of living",
     "The best negotiators are not the",
     "Balance is the wrong word for",
     "Grey skies really do change your",
@@ -40,9 +39,10 @@
     "Home is not an address. It's",
     "People decide about you before you",
     "Your voice changes when you're nervous.",
-    "Travelling alone is not lonely. It"
+    "Travelling alone is not lonely. It",
+    "Why do you freeze when speaking"
   ],
   "topic_index_afternoon": 30,
   "topic_index_evening": 1,
-  "topic_index_noon": 30
+  "topic_index_noon": 1
 }
