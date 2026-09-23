@@ -1,7 +1,6 @@
 {
   "topic_index_morning": 4,
   "recent_openings": [
-    "Balance is the wrong word for",
     "Grey skies really do change your",
     "Reading is thinking with someone else's",
     "Balance is the wrong word for",
@@ -40,9 +39,10 @@
     "Your voice changes when you're nervous.",
     "Travelling alone is not lonely. It",
     "Why do you freeze when speaking",
-    "Your voice changes when you're nervous."
+    "Your voice changes when you're nervous.",
+    "Remote work gave us time and"
   ],
   "topic_index_afternoon": 1,
-  "topic_index_evening": 1,
+  "topic_index_evening": 2,
   "topic_index_noon": 1
 }
