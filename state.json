@@ -1,7 +1,6 @@
 {
   "topic_index_morning": 5,
   "recent_openings": [
-    "Reading is thinking with someone else's",
     "Balance is the wrong word for",
     "You already have a personal brand.",
     "Adult friendship needs effort. Nobody warns",
@@ -40,9 +39,10 @@
     "Why do you freeze when speaking",
     "Your voice changes when you're nervous.",
     "Remote work gave us time and",
-    "Why does your English sound different"
+    "Why does your English sound different",
+    "Your morning coffee is not about"
   ],
   "topic_index_afternoon": 1,
   "topic_index_evening": 2,
-  "topic_index_noon": 1
+  "topic_index_noon": 2
 }
