@@ -1,7 +1,6 @@
 {
   "topic_index_morning": 6,
   "recent_openings": [
-    "Rest is not a reward. It",
     "You already have a personal brand.",
     "Decisions are tiring because most of",
     "You learn a country through its",
@@ -40,9 +39,10 @@
     "Your morning coffee is not about",
     "Remote work gave us time and",
     "The worst thing you can say",
-    "Your first hour decides your whole"
+    "Your first hour decides your whole",
+    "Why do you forget words you"
   ],
   "topic_index_afternoon": 2,
   "topic_index_evening": 3,
-  "topic_index_noon": 2
+  "topic_index_noon": 3
 }
