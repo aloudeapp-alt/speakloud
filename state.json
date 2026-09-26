@@ -1,7 +1,6 @@
 {
   "topic_index_morning": 7,
   "recent_openings": [
-    "Decisions are tiring because most of",
     "Networking feels fake because we do",
     "You become a slightly different person",
     "Grey skies really do change your",
@@ -40,9 +39,10 @@
     "The worst thing you can say",
     "AI will not replace you. Someone",
     "Stop saying sorry when you speak",
-    "Travelling alone is not lonely. It"
+    "Travelling alone is not lonely. It",
+    "AI will not replace you. Someone"
   ],
-  "topic_index_afternoon": 3,
+  "topic_index_afternoon": 4,
   "topic_index_evening": 4,
   "topic_index_noon": 4
 }
