@@ -1,7 +1,6 @@
 {
   "topic_index_morning": 10,
   "recent_openings": [
-    "Every yes is a no to",
     "Why do you freeze when speaking",
     "You become a slightly different person",
     "Every yes is a no to",
@@ -40,9 +39,10 @@
     "What do you do when your",
     "You are not tired. You are",
     "Stop saying sorry when you speak",
-    "What do you do when your"
+    "What do you do when your",
+    "Most feedback is either kind or"
   ],
   "topic_index_afternoon": 7,
-  "topic_index_evening": 7,
+  "topic_index_evening": 8,
   "topic_index_noon": 7
 }
