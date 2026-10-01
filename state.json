@@ -1,7 +1,6 @@
 {
   "topic_index_morning": 12,
   "recent_openings": [
-    "Silence is the most underrated speaking",
     "People decide about you before you",
     "Why do you forget words you",
     "Home is not an address. It's",
@@ -40,9 +39,10 @@
     "Most feedback is either kind or",
     "Why do you say 'um' so",
     "Cooking is the cheapest therapy there",
-    "This is why you speak English"
+    "This is why you speak English",
+    "Why do you say 'um' so"
   ],
-  "topic_index_afternoon": 8,
+  "topic_index_afternoon": 9,
   "topic_index_evening": 9,
   "topic_index_noon": 9
 }
