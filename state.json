@@ -1,7 +1,6 @@
 {
   "topic_index_morning": 11,
   "recent_openings": [
-    "Every yes is a no to",
     "Silence is the most underrated speaking",
     "Your morning coffee is not about",
     "We buy the feeling, not the",
@@ -40,9 +39,10 @@
     "What do you do when your",
     "Most feedback is either kind or",
     "Your English mistakes are actually helping",
-    "What you wear changes how you"
+    "What you wear changes how you",
+    "Most feedback is either kind or"
   ],
-  "topic_index_afternoon": 7,
+  "topic_index_afternoon": 8,
   "topic_index_evening": 8,
   "topic_index_noon": 8
 }
