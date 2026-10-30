@@ -1,7 +1,6 @@
 {
   "topic_index_morning": 11,
   "recent_openings": [
-    "You become a slightly different person",
     "Every yes is a no to",
     "Silence is the most underrated speaking",
     "Your morning coffee is not about",
@@ -40,9 +39,10 @@
     "Stop saying sorry when you speak",
     "What do you do when your",
     "Most feedback is either kind or",
-    "Your English mistakes are actually helping"
+    "Your English mistakes are actually helping",
+    "What you wear changes how you"
   ],
   "topic_index_afternoon": 7,
   "topic_index_evening": 8,
-  "topic_index_noon": 7
+  "topic_index_noon": 8
 }
