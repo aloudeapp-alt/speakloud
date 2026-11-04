@@ -1,7 +1,6 @@
 {
   "topic_index_morning": 16,
   "recent_openings": [
-    "The worst thing you can say",
     "AI will not replace you. Someone",
     "Stop saying sorry when you speak",
     "Travelling alone is not lonely. It",
@@ -40,9 +39,10 @@
     "Loud leaders are rarely the best",
     "Why do native speakers make you",
     "Big cities give you everything except",
-    "Stop translating English in your head."
+    "Stop translating English in your head.",
+    "Why do native speakers make you"
   ],
-  "topic_index_afternoon": 12,
+  "topic_index_afternoon": 13,
   "topic_index_evening": 13,
   "topic_index_noon": 13
 }
