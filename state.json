@@ -1,7 +1,6 @@
 {
   "topic_index_morning": 7,
   "recent_openings": [
-    "Social media is not free. You",
     "Decisions are tiring because most of",
     "Networking feels fake because we do",
     "You become a slightly different person",
@@ -40,9 +39,10 @@
     "Stop translating English in your head.",
     "Your English mistakes are actually helping",
     "Do you know why you freeze",
-    "Do you know why you freeze"
+    "Do you know why you freeze",
+    "The worst thing you can say"
   ],
-  "topic_index_afternoon": 2,
+  "topic_index_afternoon": 3,
   "topic_index_evening": 4,
   "topic_index_noon": 4
 }
